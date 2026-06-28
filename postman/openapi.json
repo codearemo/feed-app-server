@@ -1,0 +1,2280 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Express API Boilerplate",
+    "version": "1.0.0",
+    "description": "Express REST API boilerplate. Import `/api-docs.json` into Postman to generate a collection."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3003",
+      "description": "Local development"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT returned from POST /api/v1/auth/login (`token` field in response)"
+      }
+    },
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "OK"
+          },
+          "database": {
+            "type": "string",
+            "example": "connected"
+          }
+        }
+      },
+      "HealthErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "ERROR"
+          },
+          "database": {
+            "type": "string",
+            "enum": [
+              "disconnected",
+              "unavailable",
+              "unsupported"
+            ],
+            "example": "disconnected"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "description": "User object returned from auth routes (register, login, social). Does not include profilePicture — use GET /users/me for the full profile.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "664a1b2c3d4e5f678901234"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Jane"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "username": {
+            "type": "string",
+            "example": "jane"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jane@example.com"
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "example": false
+          },
+          "twoFactorEnabled": {
+            "type": "boolean",
+            "example": false
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "example": "active"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "UserProfile": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/User"
+          },
+          {
+            "type": "object",
+            "description": "Full profile from GET/PATCH /users/me. profilePicture is hydrated from the files collection.",
+            "properties": {
+              "profilePicture": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/UploadFile"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "firstName",
+          "lastName",
+          "username",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "Jane"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30,
+            "example": "jane"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jane@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "example": "Password123!"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "identifier",
+          "password"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Email or username (single login field)",
+            "example": "jane"
+          },
+          "password": {
+            "type": "string",
+            "example": "Password123!"
+          }
+        }
+      },
+      "ForgotPasswordRequest": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jane@example.com"
+          }
+        }
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "otp",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jane@example.com"
+          },
+          "otp": {
+            "type": "string",
+            "pattern": "^\\d{6}$",
+            "description": "6-digit code from the reset email",
+            "example": "123456"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "example": "Newpassword123!"
+          }
+        }
+      },
+      "VerifyEmailRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "otp"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jane@example.com"
+          },
+          "otp": {
+            "type": "string",
+            "pattern": "^\\d{6}$",
+            "description": "6-digit code from the verification email",
+            "example": "123456"
+          }
+        }
+      },
+      "ResendVerificationRequest": {
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jane@example.com"
+          }
+        }
+      },
+      "RefreshTokenRequest": {
+        "type": "object",
+        "required": [
+          "refreshToken"
+        ],
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token from login or a prior refresh response",
+            "example": "a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12"
+          }
+        }
+      },
+      "SocialLoginRequest": {
+        "type": "object",
+        "required": [
+          "provider",
+          "idToken"
+        ],
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "google",
+              "apple"
+            ],
+            "description": "Social identity provider",
+            "example": "google"
+          },
+          "idToken": {
+            "type": "string",
+            "description": "ID token from the provider SDK (Google Sign-In or Apple Sign-In)",
+            "example": "eyJhbGciOiJSUzI1NiIs..."
+          }
+        }
+      },
+      "AuthTokens": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Short-lived access JWT — `Authorization: Bearer <token>`",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Long-lived refresh token — store securely, send to POST /auth/refresh",
+            "example": "a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "requiresTwoFactor": {
+            "type": "boolean",
+            "description": "When true, complete sign-in with POST /auth/2fa/verify using twoFactorToken and a TOTP code",
+            "example": false
+          },
+          "twoFactorToken": {
+            "type": "string",
+            "description": "Present when requiresTwoFactor is true — single-use challenge token (64-char hex)",
+            "example": "a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd1234"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "token": {
+            "type": "string",
+            "description": "Short-lived access JWT — send as `Authorization: Bearer <token>`",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Long-lived refresh token for POST /auth/refresh",
+            "example": "a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12"
+          }
+        }
+      },
+      "TwoFactorSetupResponse": {
+        "type": "object",
+        "properties": {
+          "secret": {
+            "type": "string",
+            "description": "Base32 TOTP secret for manual entry"
+          },
+          "otpauthUrl": {
+            "type": "string",
+            "description": "otpauth:// URI for QR scanning"
+          }
+        }
+      },
+      "ConfirmTwoFactorRequest": {
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$",
+            "example": "123456"
+          }
+        }
+      },
+      "VerifyTwoFactorLoginRequest": {
+        "type": "object",
+        "required": [
+          "twoFactorToken",
+          "code"
+        ],
+        "properties": {
+          "twoFactorToken": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$",
+            "example": "123456"
+          }
+        }
+      },
+      "DisableTwoFactorRequest": {
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$",
+            "example": "123456"
+          },
+          "password": {
+            "type": "string",
+            "description": "Required when the account has a password"
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "description": "Included on paginated list endpoints only",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "example": 1
+          },
+          "limit": {
+            "type": "integer",
+            "example": 20
+          },
+          "total": {
+            "type": "integer",
+            "example": 100
+          },
+          "totalPages": {
+            "type": "integer",
+            "example": 5
+          },
+          "hasNextPage": {
+            "type": "boolean",
+            "example": true
+          },
+          "hasPrevPage": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "SuccessResponseUser": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/User"
+          },
+          "message": {
+            "type": "string",
+            "example": "User registered successfully"
+          }
+        }
+      },
+      "UpdateProfileRequest": {
+        "type": "object",
+        "minProperties": 1,
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "minLength": 1,
+            "example": "Janet"
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 1,
+            "example": "Smith"
+          },
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30,
+            "example": "janet"
+          },
+          "bio": {
+            "type": "string",
+            "maxLength": 500,
+            "example": "Building cool things."
+          },
+          "profilePicture": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Active upload file id from POST /uploads (images only). Send null to remove.",
+                "example": "664a1b2c3d4e5f678901234567"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "SuccessResponseUserProfile": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/UserProfile"
+          },
+          "message": {
+            "type": "string",
+            "example": "Profile fetched successfully"
+          }
+        }
+      },
+      "SuccessResponseUserUpdated": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/UserProfile"
+          },
+          "message": {
+            "type": "string",
+            "example": "Profile updated successfully"
+          }
+        }
+      },
+      "SuccessResponseLogin": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/LoginResponse"
+          },
+          "message": {
+            "type": "string",
+            "example": "Login successful"
+          }
+        }
+      },
+      "SuccessResponseRefreshTokens": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AuthTokens"
+          },
+          "message": {
+            "type": "string",
+            "example": "Token refreshed successfully"
+          }
+        }
+      },
+      "SuccessResponseMessage": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "null",
+            "nullable": true,
+            "example": null
+          },
+          "message": {
+            "type": "string",
+            "example": "If that email is registered, a verification code has been sent."
+          }
+        }
+      },
+      "UploadFile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "MongoDB file record id",
+            "example": "664a1b2c3d4e5f678901234567"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "http://localhost:3000/uploads/a1b2c3d4e5f6.jpg"
+          },
+          "name": {
+            "type": "string",
+            "description": "Stored filename on disk",
+            "example": "a1b2c3d4e5f678901234567890abcd12.jpg"
+          },
+          "originalName": {
+            "type": "string",
+            "example": "photo.jpg"
+          },
+          "mimeType": {
+            "type": "string",
+            "example": "image/jpeg"
+          },
+          "size": {
+            "type": "integer",
+            "example": 20480
+          },
+          "encoding": {
+            "type": "string",
+            "example": "7bit"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "local",
+              "s3",
+              "cloudinary"
+            ],
+            "example": "local"
+          }
+        }
+      },
+      "UploadFilesRequest": {
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "description": "One or more files (field name must be `files`)"
+          }
+        }
+      },
+      "SuccessResponseUploadFiles": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UploadFile"
+            }
+          },
+          "message": {
+            "type": "string",
+            "example": "Files uploaded successfully"
+          }
+        }
+      },
+      "ArchivedUploadFile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "664a1b2c3d4e5f678901234567"
+          },
+          "name": {
+            "type": "string",
+            "example": "a1b2c3d4e5f678901234567890abcd12.jpg"
+          },
+          "archivedName": {
+            "type": "string",
+            "description": "Internal archive location (not publicly served at the original URL)",
+            "example": "_archive/a1b2c3d4e5f678901234567890abcd12.jpg"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "local",
+              "s3",
+              "cloudinary"
+            ],
+            "example": "local"
+          }
+        }
+      },
+      "SuccessResponseArchiveUpload": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ArchivedUploadFile"
+          },
+          "message": {
+            "type": "string",
+            "example": "File archived successfully"
+          }
+        }
+      },
+      "ApiErrorMessageResponse": {
+        "type": "object",
+        "required": [
+          "data",
+          "message"
+        ],
+        "properties": {
+          "data": {
+            "type": "null",
+            "nullable": true
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ApiValidationErrorResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "properties": {
+          "details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "data": null,
+          "message": "Validation failed",
+          "details": [
+            {
+              "field": "email",
+              "message": "Invalid email address"
+            }
+          ]
+        }
+      },
+      "ApiAuthRequiredError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Authentication required"
+        }
+      },
+      "ApiInvalidTokenError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Invalid or expired token"
+        }
+      },
+      "ApiInvalidCredentialsError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Invalid credentials"
+        }
+      },
+      "ApiSocialLoginError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "This account uses social login"
+        }
+      },
+      "ApiInvalidSocialTokenError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Invalid or expired social token"
+        }
+      },
+      "ApiSocialEmailRequiredError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Email is required from the social provider"
+        }
+      },
+      "ApiSocialEmailNotVerifiedError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Email not verified with the social provider"
+        }
+      },
+      "ApiSocialProviderNotConfiguredError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Google sign-in is not configured"
+        }
+      },
+      "ApiInactiveAccountError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Account is inactive"
+        }
+      },
+      "ApiInvalidResetTokenError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Invalid or expired verification code"
+        }
+      },
+      "ApiEmailNotVerifiedError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Email not verified"
+        }
+      },
+      "ApiInvalidRefreshTokenError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Invalid or expired refresh token"
+        }
+      },
+      "ApiConflictError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Email already in use"
+        }
+      },
+      "ApiNotFoundError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "File not found"
+        }
+      },
+      "ApiUserNotFoundError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "User not found"
+        }
+      },
+      "ApiJsonBodyTooLargeError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Request body too large"
+        }
+      },
+      "ApiFileTooLargeError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "File too large"
+        }
+      },
+      "ApiUploadError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "At least one file is required"
+        }
+      },
+      "ApiRateLimitRegisterError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Too many registration attempts, please try again later"
+        }
+      },
+      "ApiRateLimitLoginError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Too many login attempts, please try again later"
+        }
+      },
+      "ApiRateLimitForgotPasswordError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Too many password reset requests, please try again later"
+        }
+      },
+      "ApiRateLimitResetPasswordError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Too many reset attempts, please try again later"
+        }
+      },
+      "ApiRateLimitVerifyEmailError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Too many verification attempts, please try again later"
+        }
+      },
+      "ApiRateLimitResendVerificationError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Too many resend verification attempts, please try again later"
+        }
+      },
+      "ApiRateLimitRefreshError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Too many refresh attempts, please try again later"
+        }
+      },
+      "ApiRateLimitLogoutError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Too many logout attempts, please try again later"
+        }
+      },
+      "ApiRateLimitSocialLoginError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Too many social login attempts, please try again later"
+        }
+      },
+      "ApiRateLimitUploadError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Too many upload requests, please try again later"
+        }
+      },
+      "ApiRateLimitGlobalError": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiErrorMessageResponse"
+          }
+        ],
+        "example": {
+          "data": null,
+          "message": "Too many requests, please try again later"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health check",
+        "description": "Returns OK when the server and MongoDB are reachable.\nLoad balancers should treat **503** as unhealthy.\n",
+        "responses": {
+          "200": {
+            "description": "Server and database are healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Register a new user",
+        "description": "Creates the account with `emailVerified: false` and emails a 6-digit verification code.\nLogin is blocked until `POST /auth/verify-email` succeeds.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseUser"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email or username already in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON body exceeds JSON_BODY_LIMIT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiJsonBodyTooLargeError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many registration attempts from this IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitRegisterError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify-email": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Verify email with OTP",
+        "description": "Submit the 6-digit code from the registration email.\nReturns **400** for invalid or expired codes (max attempts enforced).\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or invalid/expired code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiInvalidResetTokenError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON body exceeds JSON_BODY_LIMIT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiJsonBodyTooLargeError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many verify-email attempts from this IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitVerifyEmailError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/resend-verification": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Resend email verification OTP",
+        "description": "Sends a new verification code when the email is registered and not yet verified.\nAlways returns the same success message to avoid email enumeration.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendVerificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generic success (sent if eligible)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON body exceeds JSON_BODY_LIMIT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiJsonBodyTooLargeError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many resend attempts from this IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitResendVerificationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Log in with email or username",
+        "description": "Send a single `identifier` (email or username) and `password`.\nReturns a short-lived access JWT in `token` and a long-lived `refreshToken`.\nUse `token` as `Authorization: Bearer <token>` on protected routes.\nWhen `token` expires, call `POST /auth/refresh` with `refreshToken`.\nReturns **403** if the account `status` is `inactive`.\nReturns **403** if the email is not verified (`POST /auth/verify-email` required).\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseLogin"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiInvalidCredentialsError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Account is inactive or email not verified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiInactiveAccountError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiEmailNotVerifiedError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON body exceeds JSON_BODY_LIMIT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiJsonBodyTooLargeError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many login attempts from this IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitLoginError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/social": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Log in with Google or Apple",
+        "description": "Exchange a provider `idToken` from Google Sign-In or Apple Sign-In for the same\ntoken pair returned by `POST /auth/login`.\n\n- New users are created automatically (username is generated).\n- If the provider email matches an existing account, the provider is linked to that account.\n- New accounts and email linking require `emailVerified: true` from the provider (no separate app email flow).\n- Returning users are matched by `provider` + `providerId` and do not re-check email verification.\n- Returns **403** if the account `status` is `inactive`.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SocialLoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseLogin"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed, unverified provider email, or missing email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiSocialEmailRequiredError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiSocialEmailNotVerifiedError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired social token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiInvalidSocialTokenError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Account is inactive",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiInactiveAccountError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON body exceeds JSON_BODY_LIMIT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiJsonBodyTooLargeError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many social login attempts from this IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitSocialLoginError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Social provider is not configured on the server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiSocialProviderNotConfiguredError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Refresh access token",
+        "description": "Exchange a valid `refreshToken` for a new access `token` and rotated `refreshToken`.\nThe previous refresh token is invalidated (single-use rotation).\nReturns **403** if the account `status` is `inactive`.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New tokens issued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseRefreshTokens"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired refresh token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiInvalidRefreshTokenError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Account is inactive",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiInactiveAccountError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON body exceeds JSON_BODY_LIMIT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiJsonBodyTooLargeError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many refresh attempts from this IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitRefreshError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Log out (revoke refresh token)",
+        "description": "Invalidates the provided `refreshToken` server-side.\nAccess tokens remain valid until they expire (keep them short-lived).\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Refresh token revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON body exceeds JSON_BODY_LIMIT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiJsonBodyTooLargeError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many logout attempts from this IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitLogoutError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Request a password reset OTP",
+        "description": "Send the user's email. If the account has a password, a 6-digit reset code is emailed.\nAlways returns the same success message to avoid email enumeration.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generic success (sent if email is registered)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON body exceeds JSON_BODY_LIMIT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiJsonBodyTooLargeError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many password reset requests from this IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitForgotPasswordError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Set a new password with email and OTP",
+        "description": "Use the 6-digit code from the reset email together with the account email.\nOn success, all refresh tokens for that user are revoked server-side.\nLog in separately with the new password to obtain a new token pair.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or invalid/expired OTP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiInvalidResetTokenError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON body exceeds JSON_BODY_LIMIT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiJsonBodyTooLargeError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many reset attempts from this IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitResetPasswordError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/2fa/setup": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Start TOTP two-factor setup",
+        "description": "Returns a TOTP secret and `otpauth://` URL for the authenticator app.\nCall `POST /auth/2fa/confirm` with a valid code to enable 2FA.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Setup started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TwoFactorSetupResponse"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Two-factor authentication is already enabled"
+          },
+          "401": {
+            "description": "Authentication required"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/2fa/confirm": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Confirm and enable two-factor authentication",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmTwoFactorRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Two-factor authentication enabled"
+          },
+          "400": {
+            "description": "Invalid or expired setup, or invalid authenticator code"
+          },
+          "401": {
+            "description": "Authentication required"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/2fa/verify": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Complete login with a TOTP code",
+        "description": "Used after `POST /auth/login` or `POST /auth/social` when the response\nhas `requiresTwoFactor: true`. Returns the same token pair as a normal login.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyTwoFactorLoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseLogin"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid authenticator code"
+          },
+          "401": {
+            "description": "Invalid or expired two-factor token"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/2fa/disable": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Disable two-factor authentication",
+        "description": "Requires a valid TOTP code. Password is required when the account has a password.\nRevokes all refresh tokens for the user.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisableTwoFactorRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Two-factor authentication disabled"
+          },
+          "400": {
+            "description": "Not enabled, invalid code, or missing password"
+          },
+          "401": {
+            "description": "Authentication required"
+          }
+        }
+      }
+    },
+    "/api/v1/uploads": {
+      "post": {
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Upload one or more files",
+        "description": "Multipart upload using field name `files` (repeat for multiple files).\nStorage backend is selected via `UPLOAD_DRIVER` (`local`, `s3`, `cloudinary`).\nWhen `UPLOAD_PUBLIC_ACCESS=false`, response `url` values point to\n`GET /uploads/{id}/download` (JWT required).\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadFilesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Files uploaded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseUploadFiles"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No files, invalid type, or too many files",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiUploadError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiErrorMessageResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiAuthRequiredError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiInvalidTokenError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "File exceeds UPLOAD_MAX_FILE_SIZE",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiFileTooLargeError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Upload rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitUploadError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/uploads/{fileId}/download": {
+      "get": {
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Download an active uploaded file",
+        "description": "Streams an active file to the client. Requires a valid JWT.\nUsed when `UPLOAD_PUBLIC_ACCESS=false` (default in production).\nPass the file `id` from the upload response (recommended), or the stored `name`.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fileId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "File `id` from the upload response, or stored `name`"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File stream",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiAuthRequiredError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiInvalidTokenError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "File not found or archived",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiNotFoundError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Upload rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitUploadError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/uploads/{fileId}": {
+      "delete": {
+        "tags": [
+          "Uploads"
+        ],
+        "summary": "Archive an uploaded file (soft delete)",
+        "description": "Moves a file out of the active storage location so clients can no longer access it\nat the original URL. The file is retained under an archive prefix/folder for\nserver-side recovery (`UPLOAD_ARCHIVE_PREFIX`, default `_archive`).\nOnly the user who uploaded the file may archive it.\nPass the MongoDB `id` from the upload response (recommended), or the stored `name`.\nFor Cloudinary `public_id` values that contain `/`, prefer `id` or URL-encode the name.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fileId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "File `id` from the upload response, or stored `name`",
+            "example": "664a1b2c3d4e5f678901234567"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File archived",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseArchiveUpload"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid file name or file already archived in storage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiAuthRequiredError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiInvalidTokenError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "File not found or not owned by the current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiNotFoundError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Upload rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiRateLimitUploadError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/me": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get logged-in user profile",
+        "description": "Returns the full profile including a hydrated `profilePicture` object (or `null`).\nAuth responses from login/register/social do not include `profilePicture`.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current user profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseUserProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiAuthRequiredError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiInvalidTokenError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiUserNotFoundError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update logged-in user profile",
+        "description": "Partial update for the authenticated user. Send one or more of\n`firstName`, `lastName`, `username`, `bio`, or `profilePicture`.\nEmail and password cannot be changed here.\nFor `profilePicture`, send the upload `id` from `POST /uploads`, or `null` to remove.\nResponses return `profilePicture` as the full upload file object (including `url`).\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseUserUpdated"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or expired token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiAuthRequiredError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiInvalidTokenError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Email not verified or account inactive",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiEmailNotVerifiedError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiInactiveAccountError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiUserNotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Username already in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiConflictError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "JSON body exceeds JSON_BODY_LIMIT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiJsonBodyTooLargeError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,4951 @@
+{
+  "item": [
+    {
+      "id": "558ade7f-5cba-49ab-8fdf-3191fd31ac3c",
+      "name": "Health check",
+      "request": {
+        "name": "Health check",
+        "description": {
+          "content": "Returns OK when the server and MongoDB are reachable.\nLoad balancers should treat **503** as unhealthy.\n",
+          "type": "text/plain"
+        },
+        "url": {
+          "path": [
+            "health"
+          ],
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "method": "GET",
+        "auth": null
+      },
+      "response": [
+        {
+          "id": "f808d9ee-cdbb-49f0-b90a-25757ad18f6d",
+          "name": "Server and database are healthy",
+          "originalRequest": {
+            "url": {
+              "path": [
+                "health"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "body": {}
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": \"OK\",\n  \"database\": \"connected\"\n}",
+          "cookie": [],
+          "_postman_previewlanguage": "json"
+        },
+        {
+          "id": "1fba21c9-ac73-46cd-960f-1b4e185e0aa6",
+          "name": "Database unavailable",
+          "originalRequest": {
+            "url": {
+              "path": [
+                "health"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "body": {}
+          },
+          "status": "Service Unavailable",
+          "code": 503,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": \"ERROR\",\n  \"database\": \"disconnected\"\n}",
+          "cookie": [],
+          "_postman_previewlanguage": "json"
+        }
+      ],
+      "event": [],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      }
+    },
+    {
+      "id": "5fe3651d-fe7f-4fda-b0d8-c193d14dbf54",
+      "name": "api/v1",
+      "item": [
+        {
+          "id": "92e4a58f-039b-4d0e-a23c-2dcab45c5556",
+          "name": "auth",
+          "item": [
+            {
+              "id": "03f6cbba-166f-4f5f-b017-086b40b202ff",
+              "name": "Register a new user",
+              "request": {
+                "name": "Register a new user",
+                "description": {
+                  "content": "Creates the account with `emailVerified: false` and emails a 6-digit verification code.\nLogin is blocked until `POST /auth/verify-email` succeeds.\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"username\": \"<string>\",\n  \"email\": \"<email>\",\n  \"password\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "fbc0dac2-7057-470a-a980-101f6f081988",
+                  "name": "User created",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "register"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"username\": \"jane\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"Password123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": {\n    \"id\": \"664a1b2c3d4e5f678901234\",\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"username\": \"jane\",\n    \"email\": \"jane@example.com\",\n    \"emailVerified\": false,\n    \"twoFactorEnabled\": false,\n    \"bio\": \"string\",\n    \"status\": \"active\",\n    \"createdAt\": \"1991-06-19T03:26:40.749Z\",\n    \"updatedAt\": \"2015-02-07T11:55:29.853Z\"\n  },\n  \"message\": \"User registered successfully\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "f790f099-da35-4e79-99b3-324008c1ad9b",
+                  "name": "Validation failed",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "register"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"username\": \"jane\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"Password123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Validation failed\",\n  \"details\": [\n    {\n      \"field\": \"email\",\n      \"message\": \"Invalid email address\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "edafafdb-6fb0-455c-9652-375c28269568",
+                  "name": "Email or username already in use",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "register"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"username\": \"jane\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"Password123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Conflict",
+                  "code": 409,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Email already in use\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "33683ea3-9880-4a09-9e68-56a47662af64",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "register"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"username\": \"jane\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"Password123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "c04705aa-ccdb-4f92-8063-5da3f65b7fcc",
+                  "name": "Too many registration attempts from this IP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "register"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"username\": \"jane\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"Password123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many registration attempts, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "c67a76fa-170b-471b-99ba-2f8849d0ff3e",
+              "name": "Verify email with OTP",
+              "request": {
+                "name": "Verify email with OTP",
+                "description": {
+                  "content": "Submit the 6-digit code from the registration email.\nReturns **400** for invalid or expired codes (max attempts enforced).\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "verify-email"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"<email>\",\n  \"otp\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "23781bfd-ae1b-4f88-ad67-96cb6e8dfbb2",
+                  "name": "Email verified",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "verify-email"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\",\n  \"otp\": \"123456\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"If that email is registered, a verification code has been sent.\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "42de07e9-c921-4230-af1e-29dd8d4150e6",
+                  "name": "Validation failed or invalid/expired code",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "verify-email"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\",\n  \"otp\": \"123456\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "bf9d89f1-5c0c-49f6-a162-db9076f25368",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "verify-email"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\",\n  \"otp\": \"123456\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "29ce9534-8741-495c-b027-fa01e91a7596",
+                  "name": "Too many verify-email attempts from this IP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "verify-email"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\",\n  \"otp\": \"123456\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many verification attempts, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "e040a1f1-7db9-4717-b8ad-d72a93219e6f",
+              "name": "Resend email verification OTP",
+              "request": {
+                "name": "Resend email verification OTP",
+                "description": {
+                  "content": "Sends a new verification code when the email is registered and not yet verified.\nAlways returns the same success message to avoid email enumeration.\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "resend-verification"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"<email>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "d5302b91-94be-4905-9f0f-027414534cef",
+                  "name": "Generic success (sent if eligible)",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "resend-verification"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"If that email is registered, a verification code has been sent.\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "570e8696-a20a-4235-b59c-db65b65998bf",
+                  "name": "Validation failed",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "resend-verification"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "9159a19f-375a-4d97-9d0d-2f07d5b5f172",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "resend-verification"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "b86eb359-54d8-4703-a5e9-5f00197f1c1f",
+                  "name": "Too many resend attempts from this IP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "resend-verification"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many resend verification attempts, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "c0e3ea66-f465-4018-b893-10c347b2ae7b",
+              "name": "Log in with email or username",
+              "request": {
+                "name": "Log in with email or username",
+                "description": {
+                  "content": "Send a single `identifier` (email or username) and `password`.\nReturns a short-lived access JWT in `token` and a long-lived `refreshToken`.\nUse `token` as `Authorization: Bearer <token>` on protected routes.\nWhen `token` expires, call `POST /auth/refresh` with `refreshToken`.\nReturns **403** if the account `status` is `inactive`.\nReturns **403** if the email is not verified (`POST /auth/verify-email` required).\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"identifier\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "7ffd8f8d-d6c2-4633-bea4-2e1f09bdecdd",
+                  "name": "Login successful",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "login"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"identifier\": \"jane\",\n  \"password\": \"Password123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": {\n    \"requiresTwoFactor\": false,\n    \"twoFactorToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd1234\",\n    \"user\": {\n      \"id\": \"664a1b2c3d4e5f678901234\",\n      \"firstName\": \"Jane\",\n      \"lastName\": \"Doe\",\n      \"username\": \"jane\",\n      \"email\": \"jane@example.com\",\n      \"emailVerified\": false,\n      \"twoFactorEnabled\": false,\n      \"bio\": \"string\",\n      \"status\": \"active\",\n      \"createdAt\": \"1956-06-04T15:44:24.307Z\",\n      \"updatedAt\": \"2017-06-13T08:36:07.035Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n  },\n  \"message\": \"Login successful\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "773d2112-8432-4efd-bfbc-7f2edd37171c",
+                  "name": "Validation failed or invalid credentials",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "login"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"identifier\": \"jane\",\n  \"password\": \"Password123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "f838156f-2c74-4191-bafd-5158c3c74c08",
+                  "name": "Account is inactive or email not verified",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "login"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"identifier\": \"jane\",\n  \"password\": \"Password123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Account is inactive\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "2e715913-de05-4b03-925f-3d7dee40f046",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "login"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"identifier\": \"jane\",\n  \"password\": \"Password123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "e74b9b22-acb8-49c9-9036-b10d541acec8",
+                  "name": "Too many login attempts from this IP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "login"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"identifier\": \"jane\",\n  \"password\": \"Password123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many login attempts, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "dd5ee497-110f-46a7-850b-95ff515b8d90",
+              "name": "Log in with Google or Apple",
+              "request": {
+                "name": "Log in with Google or Apple",
+                "description": {
+                  "content": "Exchange a provider `idToken` from Google Sign-In or Apple Sign-In for the same\ntoken pair returned by `POST /auth/login`.\n\n- New users are created automatically (username is generated).\n- If the provider email matches an existing account, the provider is linked to that account.\n- New accounts and email linking require `emailVerified: true` from the provider (no separate app email flow).\n- Returning users are matched by `provider` + `providerId` and do not re-check email verification.\n- Returns **403** if the account `status` is `inactive`.\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "social"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"provider\": \"<string>\",\n  \"idToken\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "fd471e92-1d0e-4976-99ed-8ef8299284d9",
+                  "name": "Login successful",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "social"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"provider\": \"google\",\n  \"idToken\": \"eyJhbGciOiJSUzI1NiIs...\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": {\n    \"requiresTwoFactor\": false,\n    \"twoFactorToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd1234\",\n    \"user\": {\n      \"id\": \"664a1b2c3d4e5f678901234\",\n      \"firstName\": \"Jane\",\n      \"lastName\": \"Doe\",\n      \"username\": \"jane\",\n      \"email\": \"jane@example.com\",\n      \"emailVerified\": false,\n      \"twoFactorEnabled\": false,\n      \"bio\": \"string\",\n      \"status\": \"active\",\n      \"createdAt\": \"1956-06-04T15:44:24.307Z\",\n      \"updatedAt\": \"2017-06-13T08:36:07.035Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n  },\n  \"message\": \"Login successful\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "6c631805-5349-4489-af3b-2bcfd62de83e",
+                  "name": "Validation failed, unverified provider email, or missing email",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "social"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"provider\": \"google\",\n  \"idToken\": \"eyJhbGciOiJSUzI1NiIs...\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "1bab90b2-527b-45ae-9563-bf5d58604d12",
+                  "name": "Invalid or expired social token",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "social"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"provider\": \"google\",\n  \"idToken\": \"eyJhbGciOiJSUzI1NiIs...\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Invalid or expired social token\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "9f462c55-a7fe-4d8e-b8b1-97e6ddf658e3",
+                  "name": "Account is inactive",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "social"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"provider\": \"google\",\n  \"idToken\": \"eyJhbGciOiJSUzI1NiIs...\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Account is inactive\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "8a3f2ca4-6b63-4b96-8e89-3618557f0b5d",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "social"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"provider\": \"google\",\n  \"idToken\": \"eyJhbGciOiJSUzI1NiIs...\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "179cb371-f051-4e53-b893-8b6860e65c4d",
+                  "name": "Too many social login attempts from this IP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "social"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"provider\": \"google\",\n  \"idToken\": \"eyJhbGciOiJSUzI1NiIs...\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many social login attempts, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "7023b993-ba0e-48e2-9903-96cf592859f6",
+                  "name": "Social provider is not configured on the server",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "social"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"provider\": \"google\",\n  \"idToken\": \"eyJhbGciOiJSUzI1NiIs...\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Service Unavailable",
+                  "code": 503,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Google sign-in is not configured\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "941c2181-a37d-4b6d-9161-d5ee3c794afd",
+              "name": "Refresh access token",
+              "request": {
+                "name": "Refresh access token",
+                "description": {
+                  "content": "Exchange a valid `refreshToken` for a new access `token` and rotated `refreshToken`.\nThe previous refresh token is invalidated (single-use rotation).\nReturns **403** if the account `status` is `inactive`.\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "refresh"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "bab17c53-b863-4bca-90b8-87b7dd45db5b",
+                  "name": "New tokens issued",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "refresh"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": {\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n  },\n  \"message\": \"Token refreshed successfully\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "1cfc9686-8003-4c49-808d-799114db1390",
+                  "name": "Validation failed",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "refresh"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "467dd729-9a01-4b55-8e34-879c80fd6b0e",
+                  "name": "Invalid or expired refresh token",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "refresh"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Invalid or expired refresh token\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "66981df8-00d4-493a-9216-ace238b86c7c",
+                  "name": "Account is inactive",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "refresh"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Account is inactive\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "f0be2e68-f255-4f25-ae3e-5aca9cf0de22",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "refresh"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "b827bae3-0d74-492a-b7ea-6380e710e7af",
+                  "name": "Too many refresh attempts from this IP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "refresh"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many refresh attempts, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "e4d8f52d-6201-4609-a868-32b96f55e5a3",
+              "name": "Log out (revoke refresh token)",
+              "request": {
+                "name": "Log out (revoke refresh token)",
+                "description": {
+                  "content": "Invalidates the provided `refreshToken` server-side.\nAccess tokens remain valid until they expire (keep them short-lived).\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "logout"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "05c0d381-0672-40bc-b1ca-772a2f02d1e1",
+                  "name": "Refresh token revoked",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "logout"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"If that email is registered, a verification code has been sent.\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "b15732a6-03d3-4fad-88fe-3af2287ad4c1",
+                  "name": "Validation failed",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "logout"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "1e72d65e-0c55-4fe0-ab42-dd60ee94172f",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "logout"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "c2a801cc-edc0-4928-a13a-1e03eacfdbaf",
+                  "name": "Too many logout attempts from this IP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "logout"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many logout attempts, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "8311c034-19dd-45c1-80d1-33eaca3f50a5",
+              "name": "Request a password reset OTP",
+              "request": {
+                "name": "Request a password reset OTP",
+                "description": {
+                  "content": "Send the user's email. If the account has a password, a 6-digit reset code is emailed.\nAlways returns the same success message to avoid email enumeration.\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "forgot-password"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"<email>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "75476e96-3cb5-4572-8758-72ece712a8a6",
+                  "name": "Generic success (sent if email is registered)",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "forgot-password"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"If that email is registered, a verification code has been sent.\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "c0a0427b-8dbd-4164-9796-ced2547b48fc",
+                  "name": "Validation failed",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "forgot-password"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "daf01858-1058-4422-bafc-901e05947187",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "forgot-password"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "e51b1789-544a-4107-8555-16e5ee3a2a6e",
+                  "name": "Too many password reset requests from this IP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "forgot-password"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many password reset requests, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "ca00d0a9-6006-4f80-b7b4-014c6733dcdc",
+              "name": "Set a new password with email and OTP",
+              "request": {
+                "name": "Set a new password with email and OTP",
+                "description": {
+                  "content": "Use the 6-digit code from the reset email together with the account email.\nOn success, all refresh tokens for that user are revoked server-side.\nLog in separately with the new password to obtain a new token pair.\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "reset-password"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": null,
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"<email>\",\n  \"otp\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "f16d7b45-4e32-42a1-af51-a2c50fb0a844",
+                  "name": "Password updated",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "reset-password"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\",\n  \"otp\": \"123456\",\n  \"password\": \"Newpassword123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"If that email is registered, a verification code has been sent.\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "72df01ea-3a73-437d-b000-8fdd6cc41ee0",
+                  "name": "Validation failed or invalid/expired OTP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "reset-password"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\",\n  \"otp\": \"123456\",\n  \"password\": \"Newpassword123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "02ac992c-1cd4-4943-938a-c41a7cdd74ab",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "reset-password"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\",\n  \"otp\": \"123456\",\n  \"password\": \"Newpassword123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "eaeff6e6-042e-48fd-a2f4-f8c877aba29c",
+                  "name": "Too many reset attempts from this IP",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "reset-password"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"email\": \"jane@example.com\",\n  \"otp\": \"123456\",\n  \"password\": \"Newpassword123!\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many reset attempts, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "51327996-688f-4d4a-8529-41bd59b420a4",
+              "name": "2fa",
+              "item": [
+                {
+                  "id": "728c228d-6016-4275-a932-ee79f2b9be73",
+                  "name": "Start TOTP two-factor setup",
+                  "request": {
+                    "name": "Start TOTP two-factor setup",
+                    "description": {
+                      "content": "Returns a TOTP secret and `otpauth://` URL for the authenticator app.\nCall `POST /auth/2fa/confirm` with a valid code to enable 2FA.\n",
+                      "type": "text/plain"
+                    },
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "2fa",
+                        "setup"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{bearerToken}}"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "38226291-72c4-4351-888b-cc427b4c428b",
+                      "name": "Setup started",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "setup"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "method": "POST",
+                        "body": {}
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n  \"data\": {\n    \"secret\": \"string\",\n    \"otpauthUrl\": \"string\"\n  },\n  \"message\": \"string\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    },
+                    {
+                      "id": "1f85d438-390d-4ed4-ad94-e3f4686c1e88",
+                      "name": "Two-factor authentication is already enabled",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "setup"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "method": "POST",
+                        "body": {}
+                      },
+                      "status": "Bad Request",
+                      "code": 400,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "text/plain"
+                        }
+                      ],
+                      "body": "",
+                      "cookie": [],
+                      "_postman_previewlanguage": "text"
+                    },
+                    {
+                      "id": "86ac9bfd-247a-4340-bd4c-e83f628fac3b",
+                      "name": "Authentication required",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "setup"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "method": "POST",
+                        "body": {}
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "text/plain"
+                        }
+                      ],
+                      "body": "",
+                      "cookie": [],
+                      "_postman_previewlanguage": "text"
+                    }
+                  ],
+                  "event": [],
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  }
+                },
+                {
+                  "id": "ef6c92db-1cca-4bfc-83b5-14b5cff56ce8",
+                  "name": "Confirm and enable two-factor authentication",
+                  "request": {
+                    "name": "Confirm and enable two-factor authentication",
+                    "description": {},
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "2fa",
+                        "confirm"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{bearerToken}}"
+                        }
+                      ]
+                    },
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"code\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "5a3e15b5-eba0-4f3e-8a09-e6328769b555",
+                      "name": "Two-factor authentication enabled",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "confirm"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "method": "POST",
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"code\": \"123456\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "text/plain"
+                        }
+                      ],
+                      "body": "",
+                      "cookie": [],
+                      "_postman_previewlanguage": "text"
+                    },
+                    {
+                      "id": "9b3c6806-b003-4f4f-bc5f-9d19faf58e65",
+                      "name": "Invalid or expired setup, or invalid authenticator code",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "confirm"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "method": "POST",
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"code\": \"123456\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        }
+                      },
+                      "status": "Bad Request",
+                      "code": 400,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "text/plain"
+                        }
+                      ],
+                      "body": "",
+                      "cookie": [],
+                      "_postman_previewlanguage": "text"
+                    },
+                    {
+                      "id": "c25e8bda-161f-40d7-8d61-8226b091b07f",
+                      "name": "Authentication required",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "confirm"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "method": "POST",
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"code\": \"123456\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "text/plain"
+                        }
+                      ],
+                      "body": "",
+                      "cookie": [],
+                      "_postman_previewlanguage": "text"
+                    }
+                  ],
+                  "event": [],
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  }
+                },
+                {
+                  "id": "ea254b9b-be91-4256-8df7-bf3ebea8034d",
+                  "name": "Complete login with a TOTP code",
+                  "request": {
+                    "name": "Complete login with a TOTP code",
+                    "description": {
+                      "content": "Used after `POST /auth/login` or `POST /auth/social` when the response\nhas `requiresTwoFactor: true`. Returns the same token pair as a normal login.\n",
+                      "type": "text/plain"
+                    },
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "2fa",
+                        "verify"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "auth": null,
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"twoFactorToken\": \"<string>\",\n  \"code\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "3001b999-9197-4f0f-825d-1f5ffb8bb864",
+                      "name": "Login successful",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "verify"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "method": "POST",
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"twoFactorToken\": \"<string>\",\n  \"code\": \"123456\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n  \"data\": {\n    \"requiresTwoFactor\": false,\n    \"twoFactorToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd1234\",\n    \"user\": {\n      \"id\": \"664a1b2c3d4e5f678901234\",\n      \"firstName\": \"Jane\",\n      \"lastName\": \"Doe\",\n      \"username\": \"jane\",\n      \"email\": \"jane@example.com\",\n      \"emailVerified\": false,\n      \"twoFactorEnabled\": false,\n      \"bio\": \"string\",\n      \"status\": \"active\",\n      \"createdAt\": \"1956-06-04T15:44:24.307Z\",\n      \"updatedAt\": \"2017-06-13T08:36:07.035Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"a1b2c3d4e5f678901234567890abcd1234567890abcd1234567890abcd12\"\n  },\n  \"message\": \"Login successful\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    },
+                    {
+                      "id": "34b82bd4-78cc-454d-99f7-23935eb514e3",
+                      "name": "Invalid authenticator code",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "verify"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "method": "POST",
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"twoFactorToken\": \"<string>\",\n  \"code\": \"123456\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        }
+                      },
+                      "status": "Bad Request",
+                      "code": 400,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "text/plain"
+                        }
+                      ],
+                      "body": "",
+                      "cookie": [],
+                      "_postman_previewlanguage": "text"
+                    },
+                    {
+                      "id": "41244e89-f4e4-4d63-81dc-b7251937338c",
+                      "name": "Invalid or expired two-factor token",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "verify"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "method": "POST",
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"twoFactorToken\": \"<string>\",\n  \"code\": \"123456\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "text/plain"
+                        }
+                      ],
+                      "body": "",
+                      "cookie": [],
+                      "_postman_previewlanguage": "text"
+                    }
+                  ],
+                  "event": [],
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  }
+                },
+                {
+                  "id": "514b81d8-11b0-4c17-84ba-c4c2456632b6",
+                  "name": "Disable two-factor authentication",
+                  "request": {
+                    "name": "Disable two-factor authentication",
+                    "description": {
+                      "content": "Requires a valid TOTP code. Password is required when the account has a password.\nRevokes all refresh tokens for the user.\n",
+                      "type": "text/plain"
+                    },
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "2fa",
+                        "disable"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{bearerToken}}"
+                        }
+                      ]
+                    },
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"code\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "ac77a92f-2679-4471-b554-87cc98c020ae",
+                      "name": "Two-factor authentication disabled",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "disable"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "method": "POST",
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"code\": \"123456\",\n  \"password\": \"<string>\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "text/plain"
+                        }
+                      ],
+                      "body": "",
+                      "cookie": [],
+                      "_postman_previewlanguage": "text"
+                    },
+                    {
+                      "id": "3744c22d-5d67-443a-bcd9-09016ca36e33",
+                      "name": "Not enabled, invalid code, or missing password",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "disable"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "method": "POST",
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"code\": \"123456\",\n  \"password\": \"<string>\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        }
+                      },
+                      "status": "Bad Request",
+                      "code": 400,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "text/plain"
+                        }
+                      ],
+                      "body": "",
+                      "cookie": [],
+                      "_postman_previewlanguage": "text"
+                    },
+                    {
+                      "id": "f4345391-fda0-4d31-9083-01236fd4c7ef",
+                      "name": "Authentication required",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "auth",
+                            "2fa",
+                            "disable"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": []
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "method": "POST",
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"code\": \"123456\",\n  \"password\": \"<string>\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "text/plain"
+                        }
+                      ],
+                      "body": "",
+                      "cookie": [],
+                      "_postman_previewlanguage": "text"
+                    }
+                  ],
+                  "event": [],
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  }
+                }
+              ],
+              "event": []
+            }
+          ],
+          "event": []
+        },
+        {
+          "id": "65cbf9fa-1b4e-488e-ab11-c384d72a62c1",
+          "name": "uploads",
+          "item": [
+            {
+              "id": "15bde172-fa39-4cf2-a014-dbefb0c23d6e",
+              "name": "Upload one or more files",
+              "request": {
+                "name": "Upload one or more files",
+                "description": {
+                  "content": "Multipart upload using field name `files` (repeat for multiple files).\nStorage backend is selected via `UPLOAD_DRIVER` (`local`, `s3`, `cloudinary`).\nWhen `UPLOAD_PUBLIC_ACCESS=false`, response `url` values point to\n`GET /uploads/{id}/download` (JWT required).\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "uploads"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "multipart/form-data"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{bearerToken}}"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "files",
+                      "value": "[\"<binary>\",\"<binary>\"]",
+                      "type": "text",
+                      "description": "(Required) One or more files (field name must be `files`)"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "6244f511-8a68-4f6d-a55e-a8a1fb02f37c",
+                  "name": "Files uploaded",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "uploads"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "description": {
+                            "content": "(Required) One or more files (field name must be `files`)",
+                            "type": "text/plain"
+                          },
+                          "key": "files",
+                          "value": "[\"<binary>\",\"<binary>\"]",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": [\n    {\n      \"id\": \"664a1b2c3d4e5f678901234567\",\n      \"url\": \"http://localhost:3000/uploads/a1b2c3d4e5f6.jpg\",\n      \"name\": \"a1b2c3d4e5f678901234567890abcd12.jpg\",\n      \"originalName\": \"photo.jpg\",\n      \"mimeType\": \"image/jpeg\",\n      \"size\": 20480,\n      \"encoding\": \"7bit\",\n      \"provider\": \"local\"\n    },\n    {\n      \"id\": \"664a1b2c3d4e5f678901234567\",\n      \"url\": \"http://localhost:3000/uploads/a1b2c3d4e5f6.jpg\",\n      \"name\": \"a1b2c3d4e5f678901234567890abcd12.jpg\",\n      \"originalName\": \"photo.jpg\",\n      \"mimeType\": \"image/jpeg\",\n      \"size\": 20480,\n      \"encoding\": \"7bit\",\n      \"provider\": \"local\"\n    }\n  ],\n  \"message\": \"Files uploaded successfully\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "c0f84e36-8f47-464a-a01c-1ab1c3eb897a",
+                  "name": "No files, invalid type, or too many files",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "uploads"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "description": {
+                            "content": "(Required) One or more files (field name must be `files`)",
+                            "type": "text/plain"
+                          },
+                          "key": "files",
+                          "value": "[\"<binary>\",\"<binary>\"]",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"At least one file is required\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "8bb0cd88-c6f5-4e12-a307-6112179896df",
+                  "name": "Missing, invalid, or expired token",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "uploads"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "description": {
+                            "content": "(Required) One or more files (field name must be `files`)",
+                            "type": "text/plain"
+                          },
+                          "key": "files",
+                          "value": "[\"<binary>\",\"<binary>\"]",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Authentication required\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "d81aa629-207d-417d-ab83-c6cfff59b046",
+                  "name": "File exceeds UPLOAD_MAX_FILE_SIZE",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "uploads"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "description": {
+                            "content": "(Required) One or more files (field name must be `files`)",
+                            "type": "text/plain"
+                          },
+                          "key": "files",
+                          "value": "[\"<binary>\",\"<binary>\"]",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"File too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "71d8cda6-5f74-40a9-bd7e-624b52806514",
+                  "name": "Upload rate limit exceeded",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "uploads"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "POST",
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "description": {
+                            "content": "(Required) One or more files (field name must be `files`)",
+                            "type": "text/plain"
+                          },
+                          "key": "files",
+                          "value": "[\"<binary>\",\"<binary>\"]",
+                          "type": "text"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Too Many Requests",
+                  "code": 429,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Too many upload requests, please try again later\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "b27f7616-8929-492d-be9b-8904c53daef5",
+              "name": "{fileId}",
+              "item": [
+                {
+                  "id": "8c0b3834-db85-4ce2-b4d0-ddf11384cb16",
+                  "name": "Archive an uploaded file (soft delete)",
+                  "request": {
+                    "name": "Archive an uploaded file (soft delete)",
+                    "description": {
+                      "content": "Moves a file out of the active storage location so clients can no longer access it\nat the original URL. The file is retained under an archive prefix/folder for\nserver-side recovery (`UPLOAD_ARCHIVE_PREFIX`, default `_archive`).\nOnly the user who uploaded the file may archive it.\nPass the MongoDB `id` from the upload response (recommended), or the stored `name`.\nFor Cloudinary `public_id` values that contain `/`, prefer `id` or URL-encode the name.\n",
+                      "type": "text/plain"
+                    },
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "uploads",
+                        ":fileId"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": [
+                        {
+                          "disabled": false,
+                          "type": "any",
+                          "value": "<string>",
+                          "key": "fileId",
+                          "description": "(Required) File `id` from the upload response, or stored `name`"
+                        }
+                      ]
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "DELETE",
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{bearerToken}}"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "e101e3b8-234e-4188-98d3-1ca2937ebbd4",
+                      "name": "File archived",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "uploads",
+                            ":fileId"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "fileId",
+                              "description": "(Required) File `id` from the upload response, or stored `name`"
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "method": "DELETE",
+                        "body": {}
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n  \"data\": {\n    \"id\": \"664a1b2c3d4e5f678901234567\",\n    \"name\": \"a1b2c3d4e5f678901234567890abcd12.jpg\",\n    \"archivedName\": \"_archive/a1b2c3d4e5f678901234567890abcd12.jpg\",\n    \"provider\": \"local\"\n  },\n  \"message\": \"File archived successfully\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    },
+                    {
+                      "id": "df208d5b-a24b-48d3-a16e-2fb0508c2bc8",
+                      "name": "Invalid file name or file already archived in storage",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "uploads",
+                            ":fileId"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "fileId",
+                              "description": "(Required) File `id` from the upload response, or stored `name`"
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "method": "DELETE",
+                        "body": {}
+                      },
+                      "status": "Bad Request",
+                      "code": 400,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    },
+                    {
+                      "id": "7b7cc52d-4b47-45af-a1f3-c3a26e02fb9e",
+                      "name": "Missing, invalid, or expired token",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "uploads",
+                            ":fileId"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "fileId",
+                              "description": "(Required) File `id` from the upload response, or stored `name`"
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "method": "DELETE",
+                        "body": {}
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n  \"data\": null,\n  \"message\": \"Authentication required\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    },
+                    {
+                      "id": "d580e4a2-1179-4c28-8b67-c240f9c95219",
+                      "name": "File not found or not owned by the current user",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "uploads",
+                            ":fileId"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "fileId",
+                              "description": "(Required) File `id` from the upload response, or stored `name`"
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "method": "DELETE",
+                        "body": {}
+                      },
+                      "status": "Not Found",
+                      "code": 404,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n  \"data\": null,\n  \"message\": \"File not found\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    },
+                    {
+                      "id": "c31bcffc-c8be-49bd-8a8e-5a3b300c1142",
+                      "name": "Upload rate limit exceeded",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "uploads",
+                            ":fileId"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "fileId",
+                              "description": "(Required) File `id` from the upload response, or stored `name`"
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "method": "DELETE",
+                        "body": {}
+                      },
+                      "status": "Too Many Requests",
+                      "code": 429,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n  \"data\": null,\n  \"message\": \"Too many upload requests, please try again later\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    }
+                  ],
+                  "event": [],
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  }
+                },
+                {
+                  "id": "e7238286-8981-4519-88a9-f7f1ab868b2d",
+                  "name": "Download an active uploaded file",
+                  "request": {
+                    "name": "Download an active uploaded file",
+                    "description": {
+                      "content": "Streams an active file to the client. Requires a valid JWT.\nUsed when `UPLOAD_PUBLIC_ACCESS=false` (default in production).\nPass the file `id` from the upload response (recommended), or the stored `name`.\n",
+                      "type": "text/plain"
+                    },
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "uploads",
+                        ":fileId",
+                        "download"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": [
+                        {
+                          "disabled": false,
+                          "type": "any",
+                          "value": "<string>",
+                          "key": "fileId",
+                          "description": "(Required) File `id` from the upload response, or stored `name`"
+                        }
+                      ]
+                    },
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/octet-stream"
+                      }
+                    ],
+                    "method": "GET",
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{bearerToken}}"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "id": "da7efda2-44a5-4ec1-93af-f8c3cc016cf2",
+                      "name": "File stream",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "uploads",
+                            ":fileId",
+                            "download"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "fileId",
+                              "description": "(Required) File `id` from the upload response, or stored `name`"
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/octet-stream"
+                          }
+                        ],
+                        "method": "GET",
+                        "body": {}
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/octet-stream"
+                        }
+                      ],
+                      "body": "string",
+                      "cookie": [],
+                      "_postman_previewlanguage": "text"
+                    },
+                    {
+                      "id": "fcda4c13-8033-4e6a-a95d-9688dea726e1",
+                      "name": "Missing, invalid, or expired token",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "uploads",
+                            ":fileId",
+                            "download"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "fileId",
+                              "description": "(Required) File `id` from the upload response, or stored `name`"
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "method": "GET",
+                        "body": {}
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n  \"data\": null,\n  \"message\": \"Authentication required\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    },
+                    {
+                      "id": "d707604f-e621-451f-af0e-33d4af4546ac",
+                      "name": "File not found or archived",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "uploads",
+                            ":fileId",
+                            "download"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "fileId",
+                              "description": "(Required) File `id` from the upload response, or stored `name`"
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "method": "GET",
+                        "body": {}
+                      },
+                      "status": "Not Found",
+                      "code": 404,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n  \"data\": null,\n  \"message\": \"File not found\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    },
+                    {
+                      "id": "b22f4321-39c6-4946-8897-59671b14833b",
+                      "name": "Upload rate limit exceeded",
+                      "originalRequest": {
+                        "url": {
+                          "path": [
+                            "api",
+                            "v1",
+                            "uploads",
+                            ":fileId",
+                            "download"
+                          ],
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "query": [],
+                          "variable": [
+                            {
+                              "disabled": false,
+                              "type": "any",
+                              "value": "<string>",
+                              "key": "fileId",
+                              "description": "(Required) File `id` from the upload response, or stored `name`"
+                            }
+                          ]
+                        },
+                        "header": [
+                          {
+                            "description": {
+                              "content": "Added as a part of security scheme: bearer",
+                              "type": "text/plain"
+                            },
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "method": "GET",
+                        "body": {}
+                      },
+                      "status": "Too Many Requests",
+                      "code": 429,
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "body": "{\n  \"data\": null,\n  \"message\": \"Too many upload requests, please try again later\"\n}",
+                      "cookie": [],
+                      "_postman_previewlanguage": "json"
+                    }
+                  ],
+                  "event": [],
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  }
+                }
+              ],
+              "event": []
+            }
+          ],
+          "event": []
+        },
+        {
+          "id": "b1b7fd5d-38bd-4e6d-8940-03ee5b1ac2fc",
+          "name": "users/me",
+          "item": [
+            {
+              "id": "ff3c7c89-4ceb-471e-96cb-e3a79d89204b",
+              "name": "Get logged-in user profile",
+              "request": {
+                "name": "Get logged-in user profile",
+                "description": {
+                  "content": "Returns the full profile including a hydrated `profilePicture` object (or `null`).\nAuth responses from login/register/social do not include `profilePicture`.\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{bearerToken}}"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "id": "51c9007f-9020-4810-bf2c-33db0c4642cd",
+                  "name": "Current user profile",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        "me"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "GET",
+                    "body": {}
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": {\n    \"id\": \"664a1b2c3d4e5f678901234\",\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"username\": \"jane\",\n    \"email\": \"jane@example.com\",\n    \"emailVerified\": false,\n    \"twoFactorEnabled\": false,\n    \"bio\": \"string\",\n    \"status\": \"active\",\n    \"createdAt\": \"1958-10-01T23:41:31.895Z\",\n    \"updatedAt\": \"2021-03-25T20:08:44.481Z\",\n    \"profilePicture\": {\n      \"id\": \"664a1b2c3d4e5f678901234567\",\n      \"url\": \"http://localhost:3000/uploads/a1b2c3d4e5f6.jpg\",\n      \"name\": \"a1b2c3d4e5f678901234567890abcd12.jpg\",\n      \"originalName\": \"photo.jpg\",\n      \"mimeType\": \"image/jpeg\",\n      \"size\": 20480,\n      \"encoding\": \"7bit\",\n      \"provider\": \"local\"\n    }\n  },\n  \"message\": \"Profile fetched successfully\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "aeaffa18-4bb4-428c-bfed-14a53c5629ed",
+                  "name": "Missing, invalid, or expired token",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        "me"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "GET",
+                    "body": {}
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Authentication required\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "6ffcc331-5917-45f2-92c3-5a80102bff0a",
+                  "name": "User not found",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        "me"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "GET",
+                    "body": {}
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"User not found\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            },
+            {
+              "id": "5a04eb13-a2dd-47f1-868c-6800a0d37346",
+              "name": "Update logged-in user profile",
+              "request": {
+                "name": "Update logged-in user profile",
+                "description": {
+                  "content": "Partial update for the authenticated user. Send one or more of\n`firstName`, `lastName`, `username`, `bio`, or `profilePicture`.\nEmail and password cannot be changed here.\nFor `profilePicture`, send the upload `id` from `POST /uploads`, or `null` to remove.\nResponses return `profilePicture` as the full upload file object (including `url`).\n",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{bearerToken}}"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"username\": \"<string>\",\n  \"bio\": \"<string>\",\n  \"profilePicture\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "response": [
+                {
+                  "id": "6afef960-965d-40d7-87ac-dc9a8c89ea67",
+                  "name": "Profile updated",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        "me"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "PATCH",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Janet\",\n  \"lastName\": \"Smith\",\n  \"username\": \"janet\",\n  \"bio\": \"Building cool things.\",\n  \"profilePicture\": \"664a1b2c3d4e5f678901234567\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": {\n    \"id\": \"664a1b2c3d4e5f678901234\",\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"username\": \"jane\",\n    \"email\": \"jane@example.com\",\n    \"emailVerified\": false,\n    \"twoFactorEnabled\": false,\n    \"bio\": \"string\",\n    \"status\": \"active\",\n    \"createdAt\": \"1983-07-13T11:51:13.654Z\",\n    \"updatedAt\": \"1996-08-22T17:38:56.056Z\",\n    \"profilePicture\": {\n      \"id\": \"664a1b2c3d4e5f678901234567\",\n      \"url\": \"http://localhost:3000/uploads/a1b2c3d4e5f6.jpg\",\n      \"name\": \"a1b2c3d4e5f678901234567890abcd12.jpg\",\n      \"originalName\": \"photo.jpg\",\n      \"mimeType\": \"image/jpeg\",\n      \"size\": 20480,\n      \"encoding\": \"7bit\",\n      \"provider\": \"local\"\n    }\n  },\n  \"message\": \"Profile updated successfully\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "9a1e294a-9e30-4c41-8589-06a623bcf893",
+                  "name": "Validation failed",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        "me"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "PATCH",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Janet\",\n  \"lastName\": \"Smith\",\n  \"username\": \"janet\",\n  \"bio\": \"Building cool things.\",\n  \"profilePicture\": \"664a1b2c3d4e5f678901234567\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"string\",\n  \"details\": [\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"field\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "4ae452b4-208f-43b9-bfa0-6bc44f11b4f0",
+                  "name": "Missing, invalid, or expired token",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        "me"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "PATCH",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Janet\",\n  \"lastName\": \"Smith\",\n  \"username\": \"janet\",\n  \"bio\": \"Building cool things.\",\n  \"profilePicture\": \"664a1b2c3d4e5f678901234567\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Authentication required\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "cdd60a74-a755-49e4-9ba4-7f7714024e02",
+                  "name": "Email not verified or account inactive",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        "me"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "PATCH",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Janet\",\n  \"lastName\": \"Smith\",\n  \"username\": \"janet\",\n  \"bio\": \"Building cool things.\",\n  \"profilePicture\": \"664a1b2c3d4e5f678901234567\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Email not verified\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "dfb33662-8848-4131-867c-f8e86cd08d53",
+                  "name": "User not found",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        "me"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "PATCH",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Janet\",\n  \"lastName\": \"Smith\",\n  \"username\": \"janet\",\n  \"bio\": \"Building cool things.\",\n  \"profilePicture\": \"664a1b2c3d4e5f678901234567\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"User not found\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "36a6f618-3d13-4132-b359-7e1791a0372b",
+                  "name": "Username already in use",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        "me"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "PATCH",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Janet\",\n  \"lastName\": \"Smith\",\n  \"username\": \"janet\",\n  \"bio\": \"Building cool things.\",\n  \"profilePicture\": \"664a1b2c3d4e5f678901234567\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Conflict",
+                  "code": 409,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Email already in use\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                },
+                {
+                  "id": "5d6b43c7-d6ab-47e2-9398-d05a1611d735",
+                  "name": "JSON body exceeds JSON_BODY_LIMIT",
+                  "originalRequest": {
+                    "url": {
+                      "path": [
+                        "api",
+                        "v1",
+                        "users",
+                        "me"
+                      ],
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "query": [],
+                      "variable": []
+                    },
+                    "header": [
+                      {
+                        "description": {
+                          "content": "Added as a part of security scheme: bearer",
+                          "type": "text/plain"
+                        },
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "method": "PATCH",
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"firstName\": \"Janet\",\n  \"lastName\": \"Smith\",\n  \"username\": \"janet\",\n  \"bio\": \"Building cool things.\",\n  \"profilePicture\": \"664a1b2c3d4e5f678901234567\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    }
+                  },
+                  "status": "Request Entity Too Large",
+                  "code": 413,
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "body": "{\n  \"data\": null,\n  \"message\": \"Request body too large\"\n}",
+                  "cookie": [],
+                  "_postman_previewlanguage": "json"
+                }
+              ],
+              "event": [],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              }
+            }
+          ],
+          "event": []
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "http://localhost:3003",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "1ce626d2-0be2-4aab-b162-4c5114b75900",
+    "name": "Express API Boilerplate",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Express REST API boilerplate. Import `/api-docs.json` into Postman to generate a collection.",
+      "type": "text/plain"
+    }
+  }
+}
