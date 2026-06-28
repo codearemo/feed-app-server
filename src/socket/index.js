@@ -21,6 +21,8 @@ const config = require('../config');
 const { getCorsOriginOption } = require('../middleware/security.middleware');
 const { authenticateSocket } = require('./auth.middleware');
 const { registerConnectionHandlers } = require('./connection.handler');
+const { userRoom, postRoom, feedRoom } = require('./rooms');
+const { resetPresence } = require('./presence');
 
 /** @type {import('socket.io').Server | null} */
 let io = null;
@@ -58,6 +60,7 @@ async function closeSocket() {
 
   const instance = io;
   io = null;
+  resetPresence();
 
   // Also closes the attached HTTP server when one was passed to initSocket.
   await new Promise((resolve) => {
@@ -69,5 +72,7 @@ module.exports = {
   initSocket,
   getIo,
   closeSocket,
-  userRoom: require('./connection.handler').userRoom,
+  userRoom,
+  postRoom,
+  feedRoom,
 };

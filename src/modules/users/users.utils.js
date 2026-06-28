@@ -5,6 +5,12 @@
 const { resolveProfilePictureForUser } = require('./users.profile');
 const { getEntityId } = require('../../utils/entity-id');
 
+function getProfileInitials(firstName, lastName) {
+  const first = firstName?.trim()?.[0] ?? '';
+  const last = lastName?.trim()?.[0] ?? '';
+  return `${first}${last}`.toUpperCase() || '?';
+}
+
 /**
  * Returns a copy of a user object that is safe to send to clients.
  *
@@ -55,6 +61,31 @@ async function toPublicUserWithProfile(user) {
 }
 
 /**
+ * Limited profile for viewing another user. Excludes email and account metadata.
+ */
+async function toPublicProfileView(user) {
+  if (!user) {
+    return null;
+  }
+
+  const userId = getEntityId(user);
+
+  return {
+    id: userId,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    username: user.username,
+    bio: user.bio ?? '',
+    avatar: getProfileInitials(user.firstName, user.lastName),
+    profilePicture: await resolveProfilePictureForUser(
+      userId,
+      user.profilePicture,
+    ),
+    createdAt: user.createdAt,
+  };
+}
+
+/**
  * Converts a Mongoose document into a plain, client-safe user object.
  *
  * Mongoose queries like `UsersModel.create()` return a *document* — a rich
@@ -76,5 +107,6 @@ function toPlainObject(doc) {
 module.exports = {
   toPublicUser,
   toPublicUserWithProfile,
+  toPublicProfileView,
   toPlainObject,
 };

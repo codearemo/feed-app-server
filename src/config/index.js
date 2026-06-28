@@ -56,6 +56,17 @@ const config = {
     return {
       enabled: process.env.SOCKET_ENABLED !== 'false',
       path: process.env.SOCKET_PATH || '/socket.io',
+      log: (() => {
+        if (process.env.SOCKET_LOG === 'true') {
+          return true;
+        }
+
+        if (process.env.SOCKET_LOG === 'false') {
+          return false;
+        }
+
+        return process.env.NODE_ENV === 'development';
+      })(),
     };
   },
   get jsonBodyLimit() {
@@ -208,6 +219,11 @@ const config = {
         windowMs:
           Number(process.env.RATE_LIMIT_UPLOAD_WINDOW_MS) || authWindowMs,
         max: Number(process.env.RATE_LIMIT_UPLOAD_MAX) || 20,
+      },
+      post: {
+        windowMs:
+          Number(process.env.RATE_LIMIT_POST_WINDOW_MS) || authWindowMs,
+        max: Number(process.env.RATE_LIMIT_POST_MAX) || 30,
       },
     };
   },

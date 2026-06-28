@@ -60,6 +60,10 @@ async function start() {
     if (config.socket.enabled) {
       console.log(`WebSocket server ready at path ${config.socket.path}`);
     }
+
+    if (config.socket.log) {
+      console.log('Socket event logging enabled');
+    }
   });
 }
 

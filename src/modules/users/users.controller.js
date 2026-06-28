@@ -13,6 +13,18 @@ async function getLoggedInUserProfile(req, res, next) {
   }
 }
 
+async function getPublicUserProfile(req, res, next) {
+  try {
+    const user = await usersService.getPublicUserProfile(req.params.userId);
+    sendSuccess(res, {
+      message: 'User profile fetched successfully',
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function updateLoggedInUserProfile(req, res, next) {
   try {
     const user = await usersService.updateLoggedInUserProfile(
@@ -30,5 +42,6 @@ async function updateLoggedInUserProfile(req, res, next) {
 
 module.exports = {
   getLoggedInUserProfile,
+  getPublicUserProfile,
   updateLoggedInUserProfile,
 };

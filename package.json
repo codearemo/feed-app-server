@@ -1,7 +1,7 @@
 {
-  "name": "express-api-boilerplate",
+  "name": "feed-app",
   "version": "1.0.0",
-  "description": "Production-ready Express REST API boilerplate — auth, 2FA, uploads, WebSockets, OpenAPI docs",
+  "description": "Feed App",
   "license": "ISC",
   "author": "",
   "type": "commonjs",

@@ -21,6 +21,15 @@ async function findById(id) {
   return normalize(doc);
 }
 
+async function findByIds(ids) {
+  if (!ids.length) {
+    return [];
+  }
+
+  const docs = await UsersModel.find({ _id: { $in: ids } }).lean();
+  return docs.map(normalize);
+}
+
 async function findByEmail(email) {
   const doc = await UsersModel.findOne({ email: normalizeEmail(email) }).lean();
   return normalize(doc);
@@ -120,6 +129,7 @@ async function disableTwoFactor(userId) {
 module.exports = {
   create,
   findById,
+  findByIds,
   findByEmail,
   findByEmailWithPassword,
   findByUsername,

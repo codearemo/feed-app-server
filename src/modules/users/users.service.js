@@ -3,8 +3,8 @@
 // ******************************************************
 
 const usersRepository = require('./repositories');
-const { toPublicUserWithProfile } = require('./users.utils');
-const { validateUpdateProfile } = require('./users.validation');
+const { toPublicUserWithProfile, toPublicProfileView } = require('./users.utils');
+const { validateUpdateProfile, validateUserId } = require('./users.validation');
 const { assertAssignableProfilePicture } = require('./users.profile');
 const { mapMongoDuplicateKeyError } = require('../../utils/mongo-errors');
 
@@ -18,6 +18,20 @@ async function getLoggedInUserProfile(userId) {
   }
 
   return toPublicUserWithProfile(user);
+}
+
+async function getPublicUserProfile(userId) {
+  validateUserId(userId);
+
+  const user = await usersRepository.findById(userId);
+
+  if (!user || user.status !== 'active') {
+    const error = new Error('User not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return toPublicProfileView(user);
 }
 
 async function updateLoggedInUserProfile(userId, body) {
@@ -72,5 +86,6 @@ async function updateLoggedInUserProfile(userId, body) {
 
 module.exports = {
   getLoggedInUserProfile,
+  getPublicUserProfile,
   updateLoggedInUserProfile,
 };

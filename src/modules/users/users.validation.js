@@ -62,6 +62,15 @@ function validateUpdateProfile(body) {
   return result.data;
 }
 
+function validateUserId(userId) {
+  if (!isMongoObjectId(userId)) {
+    const error = new Error('Invalid user id');
+    error.statusCode = 400;
+    throw error;
+  }
+}
+
 module.exports = {
   validateUpdateProfile,
+  validateUserId,
 };

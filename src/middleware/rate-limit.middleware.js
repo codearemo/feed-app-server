@@ -51,6 +51,7 @@ const {
   twoFactorVerify,
   twoFactorDisable,
   upload,
+  post,
 } = config.rateLimit;
 
 const globalLimiter = createRateLimiter({
@@ -143,6 +144,12 @@ const uploadLimiter = createRateLimiter({
   message: 'Too many upload requests, please try again later',
 });
 
+const postLimiter = createRateLimiter({
+  limit: post.max,
+  windowMs: post.windowMs,
+  message: 'Too many post requests, please try again later',
+});
+
 module.exports = {
   createRateLimiter,
   shouldSkipRateLimit,
@@ -161,4 +168,5 @@ module.exports = {
   twoFactorVerifyLimiter,
   twoFactorDisableLimiter,
   uploadLimiter,
+  postLimiter,
 };

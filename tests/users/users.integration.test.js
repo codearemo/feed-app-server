@@ -241,6 +241,87 @@ describe('Users profile API', () => {
       expect(response.body.message).toBe('Profile picture must be an image');
     });
   });
+
+  describe('GET /users/:userId', () => {
+    it('returns a public profile without private account fields', async () => {
+      const viewerToken = await getAuthToken(app);
+      const subjectToken = await getSecondUserToken(app);
+
+      const meResponse = await request(app)
+        .get(`${API}/users/me`)
+        .set('Authorization', `Bearer ${subjectToken}`)
+        .send();
+
+      const userId = meResponse.body.data.id;
+
+      await request(app)
+        .patch(`${API}/users/me`)
+        .set('Authorization', `Bearer ${subjectToken}`)
+        .send({ bio: 'Building in public', firstName: 'John', lastName: 'Smith' });
+
+      const response = await request(app)
+        .get(`${API}/users/${userId}`)
+        .set('Authorization', `Bearer ${viewerToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toMatchObject({
+        id: userId,
+        firstName: 'John',
+        lastName: 'Smith',
+        username: 'john',
+        bio: 'Building in public',
+        avatar: 'JS',
+        profilePicture: null,
+      });
+      expect(response.body.data.email).toBeUndefined();
+      expect(response.body.data.emailVerified).toBeUndefined();
+      expect(response.body.data.twoFactorEnabled).toBeUndefined();
+      expect(response.body.data.status).toBeUndefined();
+    });
+
+    it('returns 404 for an unknown user id', async () => {
+      const token = await getAuthToken(app);
+
+      const response = await request(app)
+        .get(`${API}/users/507f1f77bcf86cd799439011`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe('User not found');
+    });
+
+    it('returns 404 for inactive users', async () => {
+      const viewerToken = await getAuthToken(app);
+      const subjectToken = await getSecondUserToken(app);
+
+      const meResponse = await request(app)
+        .get(`${API}/users/me`)
+        .set('Authorization', `Bearer ${subjectToken}`);
+
+      const userId = meResponse.body.data.id;
+      const UsersModel = require('../../src/modules/users/models/users.model.mongo');
+
+      await UsersModel.updateOne({ _id: userId }, { status: 'inactive' });
+
+      const response = await request(app)
+        .get(`${API}/users/${userId}`)
+        .set('Authorization', `Bearer ${viewerToken}`);
+
+      expect(response.status).toBe(404);
+      expect(response.body.message).toBe('User not found');
+    });
+
+    it('returns 400 for an invalid user id', async () => {
+      const token = await getAuthToken(app);
+
+      const response = await request(app)
+        .get(`${API}/users/not-an-id`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Invalid user id');
+    });
+  });
 });
 
 async function getSecondUserToken(app) {

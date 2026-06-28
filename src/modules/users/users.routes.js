@@ -9,4 +9,6 @@ router.get('/me', authenticate, usersController.getLoggedInUserProfile);
 
 router.patch('/me', authenticate, usersController.updateLoggedInUserProfile);
 
+router.get('/:userId', authenticate, usersController.getPublicUserProfile);
+
 module.exports = router;
