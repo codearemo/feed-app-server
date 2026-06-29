@@ -19,6 +19,13 @@ const environmentPath = path.join(
   outDir,
   'api.local.postman_environment.json',
 );
+const productionEnvironmentPath = path.join(
+  outDir,
+  'api.production.postman_environment.json',
+);
+
+const productionBaseUrl =
+  process.env.API_PUBLIC_URL || 'https://feed-app-server.onrender.com';
 
 async function buildPostmanAssets() {
   const port = process.env.PORT || 3000;
@@ -43,8 +50,15 @@ async function buildPostmanAssets() {
     JSON.stringify(result.output[0].data, null, 2),
   );
 
-  // 3. Local Postman environment (baseUrl + token placeholder)
-  const environment = {
+  // 3. Postman environments (local + production)
+  const tokenVariable = {
+    key: 'token',
+    value: '',
+    type: 'secret',
+    enabled: true,
+  };
+
+  const localEnvironment = {
     name: 'API Local',
     values: [
       {
@@ -53,22 +67,36 @@ async function buildPostmanAssets() {
         type: 'default',
         enabled: true,
       },
-      {
-        key: 'token',
-        value: '',
-        type: 'secret',
-        enabled: true,
-      },
+      tokenVariable,
     ],
     _postman_variable_scope: 'environment',
   };
 
-  fs.writeFileSync(environmentPath, JSON.stringify(environment, null, 2));
+  const productionEnvironment = {
+    name: 'API Production (Render)',
+    values: [
+      {
+        key: 'baseUrl',
+        value: productionBaseUrl,
+        type: 'default',
+        enabled: true,
+      },
+      tokenVariable,
+    ],
+    _postman_variable_scope: 'environment',
+  };
+
+  fs.writeFileSync(environmentPath, JSON.stringify(localEnvironment, null, 2));
+  fs.writeFileSync(
+    productionEnvironmentPath,
+    JSON.stringify(productionEnvironment, null, 2),
+  );
 
   console.log('Postman assets generated:');
   console.log(`  ${openapiPath}`);
   console.log(`  ${collectionPath}`);
   console.log(`  ${environmentPath}`);
+  console.log(`  ${productionEnvironmentPath}`);
 }
 
 buildPostmanAssets().catch((error) => {

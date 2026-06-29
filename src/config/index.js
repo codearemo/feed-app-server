@@ -19,6 +19,9 @@ const config = {
   get port() {
     return Number(process.env.PORT) || 3000;
   },
+  get apiPublicUrl() {
+    return process.env.API_PUBLIC_URL || 'https://feed-app-server.onrender.com';
+  },
   get dbDriver() {
     return process.env.DB_DRIVER || 'mongo';
   },

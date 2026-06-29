@@ -21,9 +21,11 @@ describe('Password reset API', () => {
 
   describe('POST /auth/forgot-password', () => {
     it('returns the same success message and sends an OTP when email exists', async () => {
-      await request(app)
+      const registerResponse = await request(app)
         .post(`${API}/auth/register`)
         .send(validRegisterPayload());
+
+      expect(registerResponse.status).toBe(201);
 
       await verifyRegisteredUser(app);
 
@@ -33,7 +35,7 @@ describe('Password reset API', () => {
         .post(`${API}/auth/forgot-password`)
         .send({ email: 'jane@example.com' });
 
-      expect(response.status).toBe(200);
+      expect(response.status, JSON.stringify(response.body)).toBe(200);
       expect(response.body).toMatchObject({
         data: null,
         message: FORGOT_PASSWORD_MESSAGE,
@@ -79,20 +81,22 @@ describe('Password reset API', () => {
         .spyOn(mail, 'sendOtpEmail')
         .mockRejectedValue(new Error('SMTP down'));
 
-      await request(app)
-        .post(`${API}/auth/register`)
-        .send(validRegisterPayload());
+      try {
+        await request(app)
+          .post(`${API}/auth/register`)
+          .send(validRegisterPayload());
 
-      await verifyRegisteredUser(app);
+        await verifyRegisteredUser(app);
 
-      const response = await request(app)
-        .post(`${API}/auth/forgot-password`)
-        .send({ email: 'jane@example.com' });
+        const response = await request(app)
+          .post(`${API}/auth/forgot-password`)
+          .send({ email: 'jane@example.com' });
 
-      expect(response.status).toBe(200);
-      expect(response.body.message).toBe(FORGOT_PASSWORD_MESSAGE);
-
-      sendSpy.mockRestore();
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe(FORGOT_PASSWORD_MESSAGE);
+      } finally {
+        sendSpy.mockRestore();
+      }
     });
   });
 

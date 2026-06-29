@@ -20,6 +20,10 @@ const options = {
         url: `http://localhost:${config.port}`,
         description: 'Local development',
       },
+      {
+        url: config.apiPublicUrl,
+        description: 'Production (Render)',
+      },
     ],
     components: {
       securitySchemes: {

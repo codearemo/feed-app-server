@@ -349,6 +349,14 @@ Regenerate Postman collection after OpenAPI changes:
 npm run postman:build
 ```
 
+Import into Postman:
+
+- `postman/api.postman_collection.json`
+- `postman/api.local.postman_environment.json` — `http://localhost:3000`
+- `postman/api.production.postman_environment.json` — `https://feed-app-server.onrender.com`
+
+In Swagger UI (`/api-docs`), use the **Servers** dropdown to switch between local and production.
+
 ---
 
 ## Scripts
