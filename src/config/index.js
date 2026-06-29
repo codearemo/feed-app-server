@@ -225,6 +225,11 @@ const config = {
           Number(process.env.RATE_LIMIT_POST_WINDOW_MS) || authWindowMs,
         max: Number(process.env.RATE_LIMIT_POST_MAX) || 30,
       },
+      chat: {
+        windowMs:
+          Number(process.env.RATE_LIMIT_CHAT_WINDOW_MS) || authWindowMs,
+        max: Number(process.env.RATE_LIMIT_CHAT_MAX) || 60,
+      },
     };
   },
   get mail() {

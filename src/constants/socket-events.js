@@ -30,6 +30,17 @@ const SOCKET_EVENTS = {
 
   PRESENCE_ONLINE: 'presence:online',
   PRESENCE_OFFLINE: 'presence:offline',
+
+  CONVERSATION_JOIN: 'conversation:join',
+  CONVERSATION_LEAVE: 'conversation:leave',
+  MESSAGE_TYPING: 'message:typing',
+  MESSAGE_STOP_TYPING: 'message:stop_typing',
+
+  MESSAGE_CREATED: 'message:created',
+  MESSAGE_RECEIVED: 'message:received',
+  MESSAGE_SENT: 'message:sent',
+  MESSAGE_DELIVERED: 'message:delivered',
+  CONVERSATION_READ: 'conversation:read',
 };
 
 module.exports = {

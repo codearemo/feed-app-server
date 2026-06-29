@@ -7,6 +7,7 @@ const { isMongoObjectId } = require('../modules/files/files.validation');
 const postsRepository = require('../modules/posts/repositories');
 const { feedRoom, postRoom, userRoom } = require('./rooms');
 const { markOnline, markOffline } = require('./presence');
+const { registerChatSocketHandlers } = require('./chat.handlers');
 const {
   logSocketConnect,
   logSocketDisconnect,
@@ -27,6 +28,8 @@ function registerConnectionHandlers(io, socket) {
     payload: { userId },
   });
   socket.emit(SOCKET_EVENTS.CONNECTED, { userId });
+
+  registerChatSocketHandlers(socket);
 
   socket.on(SOCKET_EVENTS.FEED_JOIN, (callback) => {
     socket.join(feedRoom());

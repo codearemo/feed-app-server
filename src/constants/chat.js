@@ -1,0 +1,19 @@
+// ******************************************************
+// CHAT CONSTANTS
+// ******************************************************
+
+const MAX_MESSAGE_LENGTH = 2000;
+const DEFAULT_MESSAGES_PAGE = 1;
+const DEFAULT_MESSAGES_LIMIT = 50;
+const MAX_MESSAGES_LIMIT = 100;
+const DEFAULT_CONVERSATIONS_LIMIT = 20;
+const MAX_CONVERSATIONS_LIMIT = 50;
+
+module.exports = {
+  MAX_MESSAGE_LENGTH,
+  DEFAULT_MESSAGES_PAGE,
+  DEFAULT_MESSAGES_LIMIT,
+  MAX_MESSAGES_LIMIT,
+  DEFAULT_CONVERSATIONS_LIMIT,
+  MAX_CONVERSATIONS_LIMIT,
+};

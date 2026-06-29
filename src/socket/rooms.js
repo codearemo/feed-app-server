@@ -14,8 +14,13 @@ function feedRoom() {
   return 'feed';
 }
 
+function conversationRoom(conversationId) {
+  return `conversation:${conversationId}`;
+}
+
 module.exports = {
   userRoom,
   postRoom,
   feedRoom,
+  conversationRoom,
 };

@@ -52,6 +52,7 @@ const {
   twoFactorDisable,
   upload,
   post,
+  chat,
 } = config.rateLimit;
 
 const globalLimiter = createRateLimiter({
@@ -150,6 +151,12 @@ const postLimiter = createRateLimiter({
   message: 'Too many post requests, please try again later',
 });
 
+const chatLimiter = createRateLimiter({
+  limit: chat.max,
+  windowMs: chat.windowMs,
+  message: 'Too many chat requests, please try again later',
+});
+
 module.exports = {
   createRateLimiter,
   shouldSkipRateLimit,
@@ -169,4 +176,5 @@ module.exports = {
   twoFactorDisableLimiter,
   uploadLimiter,
   postLimiter,
+  chatLimiter,
 };

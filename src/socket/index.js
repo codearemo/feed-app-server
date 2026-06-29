@@ -21,7 +21,7 @@ const config = require('../config');
 const { getCorsOriginOption } = require('../middleware/security.middleware');
 const { authenticateSocket } = require('./auth.middleware');
 const { registerConnectionHandlers } = require('./connection.handler');
-const { userRoom, postRoom, feedRoom } = require('./rooms');
+const { userRoom, postRoom, feedRoom, conversationRoom } = require('./rooms');
 const { resetPresence } = require('./presence');
 
 /** @type {import('socket.io').Server | null} */
@@ -75,4 +75,5 @@ module.exports = {
   userRoom,
   postRoom,
   feedRoom,
+  conversationRoom,
 };

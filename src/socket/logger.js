@@ -51,8 +51,15 @@ function summarizePayload(payload) {
     summary.likedBy = payload.likedBy.id;
   }
 
-  if (payload.comment?.id !== undefined) {
-    summary.commentId = payload.comment.id;
+  if (payload.content !== undefined) {
+    summary.content =
+      typeof payload.content === 'string'
+        ? payload.content.slice(0, 80)
+        : payload.content;
+  }
+
+  if (payload.conversationId !== undefined) {
+    summary.conversationId = payload.conversationId;
   }
 
   if (Object.keys(summary).length > 0) {

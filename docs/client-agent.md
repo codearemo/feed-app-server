@@ -345,6 +345,110 @@ On unmount: `feed:leave`, `post:leave`.
 
 ---
 
+## Chat (direct messages)
+
+1-on-1 conversations between two users. All routes require Bearer auth.
+
+### Types
+
+```ts
+interface ConversationSummary {
+  id: string;
+  participant: PublicUserProfile;
+  participantLastReadAt: string | null;
+  lastMessage: ChatMessage | null;
+  unreadCount: number;
+  updatedAt: string;
+}
+
+interface ChatMessage {
+  id: string;
+  conversationId: string;
+  sender: PostAuthor;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  /** Present only on messages you sent — delivered to the other participant's client */
+  deliveredToRecipient?: boolean;
+  /** Present only on messages you sent — read by the other participant */
+  readByRecipient?: boolean;
+}
+```
+
+### REST endpoints — `/conversations`
+
+| Method | Path | Body | Notes |
+|--------|------|------|-------|
+| GET | `/conversations?page&limit` | — | Inbox list, sorted by recent activity |
+| POST | `/conversations` | `{ participantId }` | Start or return existing DM (201) |
+| GET | `/conversations/:conversationId` | — | Conversation summary |
+| POST | `/conversations/:conversationId/read` | — | Mark all messages read (also marks pending messages delivered) |
+| GET | `/conversations/:conversationId/messages?page&limit` | — | Message history (chronological) |
+| POST | `/conversations/:conversationId/messages` | `{ content }` | Send message (201, max 2000 chars) |
+| POST | `/conversations/:conversationId/messages/:messageId/delivered` | — | Recipient acks message delivery |
+
+Cannot message yourself (`400`). Non-participants get `404`. `participantId` from `GET /users/:userId` or `post.author.id`.
+
+### Client flow
+
+1. Open chat from user profile → `POST /conversations` `{ participantId }`
+2. `socket.emit('conversation:join', { conversationId })`
+3. `GET /conversations/:id/messages` → render thread
+4. Send: `POST /conversations/:id/messages` `{ content }`
+5. On open: `POST /conversations/:id/read` → clears `unreadCount`
+6. Inbox: `GET /conversations` shows `unreadCount` + `lastMessage`
+7. **Check marks** (messages you sent only):
+   - ✓ **sent** — `POST .../messages` succeeds or listen for `message:sent`
+   - ✓✓ **delivered** — `deliveredToRecipient: true` after recipient acks; listen for `message:delivered`
+   - ✓✓ **read** (blue) — `readByRecipient: true` after `POST .../read`; listen for `conversation:read`
+8. Recipient should ack delivery on `message:received` / `message:created` via `message:delivered` socket or `POST .../delivered`
+
+### Socket — chat
+
+**Client → server**
+
+| Event | Payload |
+|-------|---------|
+| `conversation:join` | `{ conversationId }` |
+| `conversation:leave` | `{ conversationId }` |
+| `message:typing` | `{ conversationId }` |
+| `message:stop_typing` | `{ conversationId }` |
+| `message:delivered` | `{ conversationId, messageId }` — recipient acks delivery |
+
+**Server → client**
+
+| Event | Room | Payload |
+|-------|------|---------|
+| `message:created` | `conversation:<id>` | Full `ChatMessage` |
+| `message:sent` | `user:<senderId>` | Full `ChatMessage` — server persisted your message |
+| `message:received` | `user:<recipientId>` | `{ conversationId, message }` — inbox notification |
+| `message:delivered` | `conversation:<id>` and `user:<senderId>` | `{ conversationId, messageId, deliveredAt, message }` |
+| `conversation:read` | `conversation:<id>` and `user:<otherParticipantId>` | `{ conversationId, userId, readAt }` |
+| `message:typing` | `conversation:<id>` | `{ conversationId, user: PostAuthor }` |
+| `message:stop_typing` | `conversation:<id>` | `{ conversationId, userId }` |
+
+```ts
+socket.emit('conversation:join', { conversationId });
+socket.on('message:created', appendMessage);
+socket.on('message:sent', reconcileSentMessage);
+socket.on('message:received', ({ conversationId, message }) => {
+  updateInboxPreview(conversationId, message);
+  socket.emit('message:delivered', {
+    conversationId,
+    messageId: message.id,
+  });
+});
+socket.on('message:delivered', ({ messageId, message }) => {
+  updateDeliveryTick(messageId, message.deliveredToRecipient);
+});
+socket.on('conversation:read', ({ conversationId, userId, readAt }) => {
+  markMessagesReadBy(conversationId, userId, readAt);
+});
+socket.on('message:typing', showTypingIndicator);
+```
+
+---
+
 ## Other endpoints (brief)
 
 ### Users — `/users`
@@ -409,7 +513,10 @@ Register, verify-email, login, social, refresh, logout, forgot/reset password, 2
 > `PostAuthor.profilePicture` is a full `UploadFile` or `null`. Never use raw ObjectIds for display. Fall back to `avatar` initials.
 
 **Sockets:**  
-> Connect with `auth: { token }` to API origin. `feed:join` on home; `post:join` on detail. Notifications on user room. Presence via `presence:online`/`offline`. Heartbeat every ~30s.
+> Connect with `auth: { token }` to API origin. `feed:join` on home; `post:join` on detail; `conversation:join` on chat. Notifications on user room. Presence via `presence:online`/`offline`. Heartbeat every ~30s.
+
+**Chat:**  
+> `POST /conversations` with `participantId` to open a DM. Messages via `POST /conversations/:id/messages`. Check marks: `message:sent` (single), `message:delivered` + `deliveredToRecipient` (double), `conversation:read` + `readByRecipient` (read). Recipient acks with `message:delivered` on receive. Mark read with `POST .../read`.
 
 **Types:**  
-> `UploadFile`, `PostAuthor`, `ContentItem`, `FeedPost` (with `commentCount`), `Comment` (without). `images` is always `UploadFile[]`.
+> `UploadFile`, `PostAuthor`, `PublicUserProfile`, `ContentItem`, `FeedPost`, `Comment`, `ConversationSummary`, `ChatMessage`.
