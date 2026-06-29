@@ -8,11 +8,7 @@ const router = express.Router();
 router.get('/', authenticate, chatController.listConversations);
 router.post('/', authenticate, chatLimiter, chatController.createConversation);
 
-router.get(
-  '/:conversationId',
-  authenticate,
-  chatController.getConversation,
-);
+router.get('/:conversationId', authenticate, chatController.getConversation);
 router.post(
   '/:conversationId/read',
   authenticate,

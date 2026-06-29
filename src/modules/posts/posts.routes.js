@@ -8,7 +8,12 @@ const router = express.Router();
 router.post('/', authenticate, postLimiter, postsController.createPost);
 router.get('/:postId', authenticate, postsController.getPost);
 router.patch('/:postId', authenticate, postLimiter, postsController.updatePost);
-router.delete('/:postId', authenticate, postLimiter, postsController.deletePost);
+router.delete(
+  '/:postId',
+  authenticate,
+  postLimiter,
+  postsController.deletePost,
+);
 
 router.post(
   '/:postId/likes',
@@ -23,11 +28,7 @@ router.delete(
   postsController.unlikePost,
 );
 
-router.get(
-  '/:postId/comments',
-  authenticate,
-  postsController.listComments,
-);
+router.get('/:postId/comments', authenticate, postsController.listComments);
 router.post(
   '/:postId/comments',
   authenticate,

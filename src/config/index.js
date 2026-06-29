@@ -131,7 +131,7 @@ const config = {
       cloudName: process.env.CLOUDINARY_CLOUD_NAME,
       apiKey: process.env.CLOUDINARY_API_KEY,
       apiSecret: process.env.CLOUDINARY_API_SECRET,
-      folder: process.env.CLOUDINARY_FOLDER || 'my-app',
+      folder: process.env.CLOUDINARY_FOLDER || 'feed-app',
     };
   },
   get rateLimit() {
@@ -221,13 +221,11 @@ const config = {
         max: Number(process.env.RATE_LIMIT_UPLOAD_MAX) || 20,
       },
       post: {
-        windowMs:
-          Number(process.env.RATE_LIMIT_POST_WINDOW_MS) || authWindowMs,
+        windowMs: Number(process.env.RATE_LIMIT_POST_WINDOW_MS) || authWindowMs,
         max: Number(process.env.RATE_LIMIT_POST_MAX) || 30,
       },
       chat: {
-        windowMs:
-          Number(process.env.RATE_LIMIT_CHAT_WINDOW_MS) || authWindowMs,
+        windowMs: Number(process.env.RATE_LIMIT_CHAT_WINDOW_MS) || authWindowMs,
         max: Number(process.env.RATE_LIMIT_CHAT_MAX) || 60,
       },
     };
@@ -248,7 +246,7 @@ const config = {
   },
   get mongo() {
     return {
-      uri: process.env.MONGO_URI || 'mongodb://localhost:27017/my-app',
+      uri: process.env.MONGO_URI || 'mongodb://localhost:27017/feed-app',
     };
   },
   get social() {

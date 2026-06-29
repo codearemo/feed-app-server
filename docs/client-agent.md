@@ -1,6 +1,8 @@
-# Feed App Server — Client Agent Reference
+# Feed App — Client Agent Reference
 
-Use this when building or wiring the client against the API.
+Backend for a social feed (posts, comments, likes) and 1-on-1 chat with real-time updates. Use this document when building or wiring the client against the API.
+
+**Server README:** [../README.md](../README.md) · **OpenAPI:** `{ORIGIN}/api-docs.json`
 
 ## Base config
 

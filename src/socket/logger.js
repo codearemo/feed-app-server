@@ -82,9 +82,7 @@ function logSocketConnect({ userId, socketId }) {
     return;
   }
 
-  console.log(
-    `[socket] connect userId=${userId} socketId=${socketId}`,
-  );
+  console.log(`[socket] connect userId=${userId} socketId=${socketId}`);
 }
 
 function logSocketDisconnect({ userId, socketId }) {
@@ -92,9 +90,7 @@ function logSocketDisconnect({ userId, socketId }) {
     return;
   }
 
-  console.log(
-    `[socket] disconnect userId=${userId} socketId=${socketId}`,
-  );
+  console.log(`[socket] disconnect userId=${userId} socketId=${socketId}`);
 }
 
 function logSocketIn({ userId, event, payload, result }) {

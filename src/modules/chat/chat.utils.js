@@ -108,17 +108,27 @@ async function buildParticipantsMap(userIds, usersRepository) {
 async function buildSendersMap(userIds, usersRepository) {
   const users = await usersRepository.findByIds(userIds);
   const entries = await Promise.all(
-    users.map(async (user) => [String(getEntityId(user)), await toPublicAuthor(user)]),
+    users.map(async (user) => [
+      String(getEntityId(user)),
+      await toPublicAuthor(user),
+    ]),
   );
 
   return new Map(entries);
 }
 
-async function buildParticipantLastReadAtMap(conversations, viewerUserId, readStateRepository) {
+async function buildParticipantLastReadAtMap(
+  conversations,
+  viewerUserId,
+  readStateRepository,
+) {
   const entries = await Promise.all(
     conversations.map(async (conversation) => {
       const conversationId = getEntityId(conversation);
-      const otherParticipantId = getOtherParticipantId(conversation, viewerUserId);
+      const otherParticipantId = getOtherParticipantId(
+        conversation,
+        viewerUserId,
+      );
       const state = await readStateRepository.findByConversationAndUser(
         conversationId,
         otherParticipantId,

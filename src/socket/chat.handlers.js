@@ -14,43 +14,66 @@ const { logSocketIn } = require('./logger');
 function registerChatSocketHandlers(socket) {
   const { id: userId } = socket.user;
 
-  socket.on(SOCKET_EVENTS.CONVERSATION_JOIN, async ({ conversationId }, callback) => {
-    if (!isMongoObjectId(conversationId)) {
-      const result = { ok: false, message: 'Invalid conversation id' };
-      logSocketIn({ userId, event: SOCKET_EVENTS.CONVERSATION_JOIN, payload: { conversationId }, result });
-      callback?.(result);
-      return;
-    }
+  socket.on(
+    SOCKET_EVENTS.CONVERSATION_JOIN,
+    async ({ conversationId }, callback) => {
+      if (!isMongoObjectId(conversationId)) {
+        const result = { ok: false, message: 'Invalid conversation id' };
+        logSocketIn({
+          userId,
+          event: SOCKET_EVENTS.CONVERSATION_JOIN,
+          payload: { conversationId },
+          result,
+        });
+        callback?.(result);
+        return;
+      }
 
-    try {
-      await chatService.assertConversationParticipant(userId, conversationId);
-      socket.join(conversationRoom(conversationId));
+      try {
+        await chatService.assertConversationParticipant(userId, conversationId);
+        socket.join(conversationRoom(conversationId));
+        const result = { ok: true };
+        logSocketIn({
+          userId,
+          event: SOCKET_EVENTS.CONVERSATION_JOIN,
+          payload: { conversationId },
+          result,
+        });
+        callback?.(result);
+      } catch (error) {
+        const result = {
+          ok: false,
+          message:
+            error.statusCode === 404 ? 'Conversation not found' : error.message,
+        };
+        logSocketIn({
+          userId,
+          event: SOCKET_EVENTS.CONVERSATION_JOIN,
+          payload: { conversationId },
+          result,
+        });
+        callback?.(result);
+      }
+    },
+  );
+
+  socket.on(
+    SOCKET_EVENTS.CONVERSATION_LEAVE,
+    ({ conversationId }, callback) => {
+      if (!isMongoObjectId(conversationId)) {
+        const result = { ok: false, message: 'Invalid conversation id' };
+        logSocketIn({
+          userId,
+          event: SOCKET_EVENTS.CONVERSATION_LEAVE,
+          payload: { conversationId },
+          result,
+        });
+        callback?.(result);
+        return;
+      }
+
+      socket.leave(conversationRoom(conversationId));
       const result = { ok: true };
-      logSocketIn({
-        userId,
-        event: SOCKET_EVENTS.CONVERSATION_JOIN,
-        payload: { conversationId },
-        result,
-      });
-      callback?.(result);
-    } catch (error) {
-      const result = {
-        ok: false,
-        message: error.statusCode === 404 ? 'Conversation not found' : error.message,
-      };
-      logSocketIn({
-        userId,
-        event: SOCKET_EVENTS.CONVERSATION_JOIN,
-        payload: { conversationId },
-        result,
-      });
-      callback?.(result);
-    }
-  });
-
-  socket.on(SOCKET_EVENTS.CONVERSATION_LEAVE, ({ conversationId }, callback) => {
-    if (!isMongoObjectId(conversationId)) {
-      const result = { ok: false, message: 'Invalid conversation id' };
       logSocketIn({
         userId,
         event: SOCKET_EVENTS.CONVERSATION_LEAVE,
@@ -58,79 +81,77 @@ function registerChatSocketHandlers(socket) {
         result,
       });
       callback?.(result);
-      return;
-    }
+    },
+  );
 
-    socket.leave(conversationRoom(conversationId));
-    const result = { ok: true };
-    logSocketIn({
-      userId,
-      event: SOCKET_EVENTS.CONVERSATION_LEAVE,
-      payload: { conversationId },
-      result,
-    });
-    callback?.(result);
-  });
+  socket.on(
+    SOCKET_EVENTS.MESSAGE_TYPING,
+    async ({ conversationId }, callback) => {
+      if (!isMongoObjectId(conversationId)) {
+        callback?.({ ok: false, message: 'Invalid conversation id' });
+        return;
+      }
 
-  socket.on(SOCKET_EVENTS.MESSAGE_TYPING, async ({ conversationId }, callback) => {
-    if (!isMongoObjectId(conversationId)) {
-      callback?.({ ok: false, message: 'Invalid conversation id' });
-      return;
-    }
+      try {
+        await chatService.assertConversationParticipant(userId, conversationId);
+        const user = await usersRepository.findById(userId);
+        const sender = await toPublicAuthor(user);
 
-    try {
-      await chatService.assertConversationParticipant(userId, conversationId);
-      const user = await usersRepository.findById(userId);
-      const sender = await toPublicAuthor(user);
+        chatSocket.emitMessageTyping(conversationId, {
+          conversationId,
+          user: sender,
+        });
 
-      chatSocket.emitMessageTyping(conversationId, {
-        conversationId,
-        user: sender,
-      });
+        logSocketIn({
+          userId,
+          event: SOCKET_EVENTS.MESSAGE_TYPING,
+          payload: { conversationId },
+          result: { ok: true },
+        });
+        callback?.({ ok: true });
+      } catch {
+        callback?.({ ok: false, message: 'Conversation not found' });
+      }
+    },
+  );
 
-      logSocketIn({
-        userId,
-        event: SOCKET_EVENTS.MESSAGE_TYPING,
-        payload: { conversationId },
-        result: { ok: true },
-      });
-      callback?.({ ok: true });
-    } catch {
-      callback?.({ ok: false, message: 'Conversation not found' });
-    }
-  });
+  socket.on(
+    SOCKET_EVENTS.MESSAGE_STOP_TYPING,
+    async ({ conversationId }, callback) => {
+      if (!isMongoObjectId(conversationId)) {
+        callback?.({ ok: false, message: 'Invalid conversation id' });
+        return;
+      }
 
-  socket.on(SOCKET_EVENTS.MESSAGE_STOP_TYPING, async ({ conversationId }, callback) => {
-    if (!isMongoObjectId(conversationId)) {
-      callback?.({ ok: false, message: 'Invalid conversation id' });
-      return;
-    }
+      try {
+        await chatService.assertConversationParticipant(userId, conversationId);
 
-    try {
-      await chatService.assertConversationParticipant(userId, conversationId);
+        chatSocket.emitMessageStopTyping(conversationId, {
+          conversationId,
+          userId,
+        });
 
-      chatSocket.emitMessageStopTyping(conversationId, {
-        conversationId,
-        userId,
-      });
-
-      logSocketIn({
-        userId,
-        event: SOCKET_EVENTS.MESSAGE_STOP_TYPING,
-        payload: { conversationId },
-        result: { ok: true },
-      });
-      callback?.({ ok: true });
-    } catch {
-      callback?.({ ok: false, message: 'Conversation not found' });
-    }
-  });
+        logSocketIn({
+          userId,
+          event: SOCKET_EVENTS.MESSAGE_STOP_TYPING,
+          payload: { conversationId },
+          result: { ok: true },
+        });
+        callback?.({ ok: true });
+      } catch {
+        callback?.({ ok: false, message: 'Conversation not found' });
+      }
+    },
+  );
 
   socket.on(
     SOCKET_EVENTS.MESSAGE_DELIVERED,
     async ({ conversationId, messageId }, callback) => {
       if (!isMongoObjectId(conversationId) || !isMongoObjectId(messageId)) {
-        const result = { ok: false, message: 'Invalid conversation or message id' };
+        const result = {
+          ok: false,
+          message: 'Invalid conversation or message id',
+        };
         logSocketIn({
           userId,
           event: SOCKET_EVENTS.MESSAGE_DELIVERED,

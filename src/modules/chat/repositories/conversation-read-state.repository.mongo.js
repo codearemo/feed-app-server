@@ -31,7 +31,11 @@ async function findByConversationsAndUser(conversationIds, userId) {
   return docs.map(normalize);
 }
 
-async function upsertReadState(conversationId, userId, lastReadAt = new Date()) {
+async function upsertReadState(
+  conversationId,
+  userId,
+  lastReadAt = new Date(),
+) {
   const doc = await ConversationReadStateModel.findOneAndUpdate(
     { conversationId, userId },
     { lastReadAt, updatedAt: new Date() },

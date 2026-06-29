@@ -20,9 +20,13 @@ const postsSocket = require('./posts.socket');
 
 async function buildPostsContext(records, viewerUserId) {
   const postIds = records.map((record) => getEntityId(record));
-  const authorIds = [...new Set(records.map((record) => String(record.authorId)))];
+  const authorIds = [
+    ...new Set(records.map((record) => String(record.authorId))),
+  ];
   const topLevelPostIds = records
-    .filter((record) => record.parentId === null || record.parentId === undefined)
+    .filter(
+      (record) => record.parentId === null || record.parentId === undefined,
+    )
     .map((record) => getEntityId(record));
 
   const [authors, likeCountsByPostId, likedPostIds, commentCountsByPostId] =
@@ -231,10 +235,7 @@ async function getComment(viewerUserId, postId, commentId) {
   validatePostId(postId);
   validateCommentId(commentId);
 
-  const record = await postsRepository.findActiveCommentById(
-    commentId,
-    postId,
-  );
+  const record = await postsRepository.findActiveCommentById(commentId, postId);
 
   if (!record) {
     const error = new Error('Comment not found');
@@ -250,10 +251,7 @@ async function updateComment(userId, postId, commentId, body) {
   validateCommentId(commentId);
   const payload = validateUpdatePost(body);
 
-  const record = await postsRepository.findActiveCommentById(
-    commentId,
-    postId,
-  );
+  const record = await postsRepository.findActiveCommentById(commentId, postId);
 
   if (!record) {
     const error = new Error('Comment not found');
@@ -289,10 +287,7 @@ async function deleteComment(userId, postId, commentId) {
   validatePostId(postId);
   validateCommentId(commentId);
 
-  const record = await postsRepository.findActiveCommentById(
-    commentId,
-    postId,
-  );
+  const record = await postsRepository.findActiveCommentById(commentId, postId);
 
   if (!record) {
     const error = new Error('Comment not found');
@@ -356,10 +351,7 @@ async function likeComment(userId, postId, commentId) {
   validatePostId(postId);
   validateCommentId(commentId);
 
-  const record = await postsRepository.findActiveCommentById(
-    commentId,
-    postId,
-  );
+  const record = await postsRepository.findActiveCommentById(commentId, postId);
 
   if (!record) {
     const error = new Error('Comment not found');
@@ -386,10 +378,7 @@ async function unlikeComment(userId, postId, commentId) {
   validatePostId(postId);
   validateCommentId(commentId);
 
-  const record = await postsRepository.findActiveCommentById(
-    commentId,
-    postId,
-  );
+  const record = await postsRepository.findActiveCommentById(commentId, postId);
 
   if (!record) {
     const error = new Error('Comment not found');

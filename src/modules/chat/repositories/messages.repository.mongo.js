@@ -58,7 +58,11 @@ async function countUnreadForUser(conversationId, userId, lastReadAt) {
   return MessagesModel.countDocuments(query);
 }
 
-async function countUnreadByConversationIds(conversationIds, userId, readStateByConversationId) {
+async function countUnreadByConversationIds(
+  conversationIds,
+  userId,
+  readStateByConversationId,
+) {
   if (!conversationIds.length) {
     return new Map();
   }
@@ -66,7 +70,11 @@ async function countUnreadByConversationIds(conversationIds, userId, readStateBy
   const counts = await Promise.all(
     conversationIds.map(async (conversationId) => {
       const lastReadAt = readStateByConversationId.get(conversationId);
-      const count = await countUnreadForUser(conversationId, userId, lastReadAt);
+      const count = await countUnreadForUser(
+        conversationId,
+        userId,
+        lastReadAt,
+      );
       return [conversationId, count];
     }),
   );
@@ -83,7 +91,11 @@ async function findByIdInConversation(messageId, conversationId) {
   return normalize(doc);
 }
 
-async function markDelivered(messageId, conversationId, deliveredAt = new Date()) {
+async function markDelivered(
+  messageId,
+  conversationId,
+  deliveredAt = new Date(),
+) {
   const doc = await MessagesModel.findOneAndUpdate(
     {
       _id: messageId,
@@ -97,7 +109,11 @@ async function markDelivered(messageId, conversationId, deliveredAt = new Date()
   return normalize(doc);
 }
 
-async function markUndeliveredFromOthers(conversationId, recipientUserId, deliveredAt = new Date()) {
+async function markUndeliveredFromOthers(
+  conversationId,
+  recipientUserId,
+  deliveredAt = new Date(),
+) {
   const docs = await MessagesModel.find({
     conversationId,
     senderId: { $ne: recipientUserId },
@@ -117,7 +133,9 @@ async function markUndeliveredFromOthers(conversationId, recipientUserId, delive
     { $set: { deliveredAt, updatedAt: deliveredAt } },
   );
 
-  return docs.map((doc) => normalize({ ...doc, deliveredAt, updatedAt: deliveredAt }));
+  return docs.map((doc) =>
+    normalize({ ...doc, deliveredAt, updatedAt: deliveredAt }),
+  );
 }
 
 module.exports = {

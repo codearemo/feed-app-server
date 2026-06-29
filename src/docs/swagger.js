@@ -10,10 +10,10 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Express API Boilerplate',
+      title: 'Feed App API',
       version: '1.0.0',
       description:
-        'Express REST API boilerplate. Import `/api-docs.json` into Postman to generate a collection.',
+        'Social feed and direct-messaging API. See docs/client-agent.md for client integration. Import `/api-docs.json` into Postman.',
     },
     servers: [
       {

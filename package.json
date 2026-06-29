@@ -1,7 +1,7 @@
 {
   "name": "feed-app",
   "version": "1.0.0",
-  "description": "Feed App",
+  "description": "Social feed and direct-messaging API — posts, comments, likes, chat, and real-time updates",
   "license": "ISC",
   "author": "",
   "type": "commonjs",

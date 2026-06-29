@@ -3,7 +3,10 @@
 // ******************************************************
 
 const usersRepository = require('./repositories');
-const { toPublicUserWithProfile, toPublicProfileView } = require('./users.utils');
+const {
+  toPublicUserWithProfile,
+  toPublicProfileView,
+} = require('./users.utils');
 const { validateUpdateProfile, validateUserId } = require('./users.validation');
 const { assertAssignableProfilePicture } = require('./users.profile');
 const { mapMongoDuplicateKeyError } = require('../../utils/mongo-errors');

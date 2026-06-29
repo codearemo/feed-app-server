@@ -252,7 +252,11 @@ async function hydrateConversationSummary(conversation, viewerUserId) {
   const sendersById = await buildSendersMap(senderIds, usersRepository);
 
   const participantLastReadAtByConversationId =
-    await buildParticipantLastReadAtMap([conversation], viewerUserId, readState);
+    await buildParticipantLastReadAtMap(
+      [conversation],
+      viewerUserId,
+      readState,
+    );
 
   const readStateRecord = await readState.findByConversationAndUser(
     conversationId,
@@ -298,10 +302,7 @@ async function listConversations(userId, query) {
     userId,
   );
   const readStateByConversationId = new Map(
-    readStates.map((state) => [
-      String(state.conversationId),
-      state.lastReadAt,
-    ]),
+    readStates.map((state) => [String(state.conversationId), state.lastReadAt]),
   );
 
   const unreadCountsByConversationId =
@@ -368,10 +369,10 @@ async function listMessages(userId, conversationId, query) {
   const conversation = await getConversationForUser(userId, conversationId);
   const { page, limit } = validateListMessagesQuery(query);
 
-  const { items, total } = await messages.listByConversationId(
-    conversationId,
-    { page, limit },
-  );
+  const { items, total } = await messages.listByConversationId(conversationId, {
+    page,
+    limit,
+  });
 
   const senderIds = [...new Set(items.map((item) => String(item.senderId)))];
   const sendersById = await buildSendersMap(senderIds, usersRepository);
