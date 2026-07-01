@@ -11,7 +11,7 @@ Backend for a social feed (posts, comments, likes) and 1-on-1 chat with real-tim
 | API base | `{ORIGIN}/api/v1` (default `http://localhost:3000/api/v1`) |
 | Socket origin | Same host as API (default `http://localhost:3000`), path `/socket.io` |
 | Health | `GET {ORIGIN}/health` → `{ status, database }` (not the standard envelope) |
-| OpenAPI | `{ORIGIN}/api-docs.json` |
+| OpenAPI | `{ORIGIN}/api-docs.json` (REST + Socket.IO reference in intro) |
 | IDs | MongoDB ObjectIds as string `id` |
 | Dates | ISO 8601 (`createdAt`, `updatedAt`) |
 

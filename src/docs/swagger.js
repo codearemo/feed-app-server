@@ -5,6 +5,7 @@
 const path = require('path');
 const swaggerJsdoc = require('swagger-jsdoc');
 const config = require('../config');
+const { getSwaggerSocketDescription } = require('./socket-reference');
 
 const options = {
   definition: {
@@ -12,8 +13,7 @@ const options = {
     info: {
       title: 'Feed App API',
       version: '1.0.0',
-      description:
-        'Social feed and direct-messaging API. See docs/client-agent.md for client integration. Import `/api-docs.json` into Postman.',
+      description: getSwaggerSocketDescription(),
     },
     servers: [
       {

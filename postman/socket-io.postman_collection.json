@@ -1,0 +1,97 @@
+{
+  "info": {
+    "name": "Feed App — Socket.IO",
+    "description": "# Real-time (Socket.IO)\n\nREST endpoints below do **not** cover WebSockets. Socket.IO uses the same host as `{{baseUrl}}`,\npath `/socket.io`, and the access JWT from login (`{{token}}`).\n\n## Quick test in Postman\n\n1. Run **Auth → Login** and ensure `{{token}}` is set.\n2. Import **`postman/socket-io.postman_collection.json`** (separate collection).\n3. Open **Connect + feed:join** → Socket.IO tab → Connect.\n4. Listen for `connected`, then emit `feed:join` (ack callback).\n5. Create a post via REST — listen for `feed:post_created`.\n\nHandshake auth (not Bearer header): `{ \"token\": \"{{token}}\" }` in Socket.IO Auth.\n\nFull event list: `docs/client-agent.md` or Swagger `/api-docs` intro.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Connect + feed:join",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        },
+        "description": {
+          "content": "## Socket.IO request\n\nIn Postman, change the request type to **Socket.IO** (if the imported method\ndoes not switch automatically).\n\n### Connection\n\n- **URL:** `{{baseUrl}}`\n- **Path:** `/socket.io`\n- **Auth → Handshake:** `{ \"token\": \"{{token}}\" }`\n\n### After connect\n\n1. **Listen** for event `connected` → `{ userId }`\n2. **Emit** `feed:join` (no payload) — wait for ack `{ ok: true }`\n3. **Listen** for `feed:post_created` while creating a post via REST\n\n### Token expiry\n\nAccess JWT expires (default 15m). On `connect_error`, refresh via\n`POST {{baseUrl}}/api/v1/auth/refresh`, update `{{token}}`, reconnect.",
+          "type": "text/markdown"
+        }
+      },
+      "protocolProfileBehavior": {
+        "socketio": {
+          "version": "4",
+          "listen": [
+            {
+              "event": "connected"
+            },
+            {
+              "event": "feed:post_created"
+            }
+          ],
+          "emit": [
+            {
+              "event": "feed:join",
+              "payload": ""
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "post:join (listen for comments)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}",
+          "host": [
+            "{{baseUrl}}"
+          ]
+        },
+        "description": {
+          "content": "Emit `post:join` with payload `{ \"postId\": \"<mongo-id>\" }`.\nListen for `comment:created`, `post:liked`, etc.",
+          "type": "text/markdown"
+        }
+      },
+      "protocolProfileBehavior": {
+        "socketio": {
+          "version": "4",
+          "listen": [
+            {
+              "event": "comment:created"
+            },
+            {
+              "event": "post:liked"
+            }
+          ],
+          "emit": [
+            {
+              "event": "post:join",
+              "payload": "{ \"postId\": \"{{postId}}\" }"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "postId",
+      "value": ""
+    }
+  ]
+}

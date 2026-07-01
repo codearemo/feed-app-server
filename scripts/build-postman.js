@@ -9,12 +9,20 @@ const path = require('path');
 const { promisify } = require('util');
 const Converter = require('openapi-to-postmanv2');
 const { getSwaggerSpec } = require('../src/docs/swagger');
+const {
+  getPostmanSocketFolder,
+  getPostmanSocketIoCollection,
+} = require('../src/docs/socket-reference');
 
 const convertOpenApi = promisify(Converter.convert).bind(Converter);
 
 const outDir = path.join(__dirname, '../postman');
 const openapiPath = path.join(outDir, 'openapi.json');
 const collectionPath = path.join(outDir, 'api.postman_collection.json');
+const socketCollectionPath = path.join(
+  outDir,
+  'socket-io.postman_collection.json',
+);
 const environmentPath = path.join(
   outDir,
   'api.local.postman_environment.json',
@@ -45,9 +53,14 @@ async function buildPostmanAssets() {
     throw new Error(`Postman conversion failed: ${result.reason}`);
   }
 
+  const collection = result.output[0].data;
+  collection.item = [getPostmanSocketFolder(), ...collection.item];
+
+  fs.writeFileSync(collectionPath, JSON.stringify(collection, null, 2));
+
   fs.writeFileSync(
-    collectionPath,
-    JSON.stringify(result.output[0].data, null, 2),
+    socketCollectionPath,
+    JSON.stringify(getPostmanSocketIoCollection(), null, 2),
   );
 
   // 3. Postman environments (local + production)
@@ -95,6 +108,7 @@ async function buildPostmanAssets() {
   console.log('Postman assets generated:');
   console.log(`  ${openapiPath}`);
   console.log(`  ${collectionPath}`);
+  console.log(`  ${socketCollectionPath}`);
   console.log(`  ${environmentPath}`);
   console.log(`  ${productionEnvironmentPath}`);
 }

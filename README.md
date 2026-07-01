@@ -351,11 +351,12 @@ npm run postman:build
 
 Import into Postman:
 
-- `postman/api.postman_collection.json`
+- `postman/api.postman_collection.json` — REST (+ Socket.IO docs folder at top)
+- `postman/socket-io.postman_collection.json` — Socket.IO connect / `feed:join` examples
 - `postman/api.local.postman_environment.json` — `http://localhost:3000`
 - `postman/api.production.postman_environment.json` — `https://feed-app-server.onrender.com`
 
-In Swagger UI (`/api-docs`), use the **Servers** dropdown to switch between local and production.
+In Swagger UI (`/api-docs`), use the **Servers** dropdown to switch between local and production. The API intro includes a **Real-time (Socket.IO)** section (reference only — not interactive).
 
 ---
 
