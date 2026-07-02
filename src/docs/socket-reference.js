@@ -21,7 +21,7 @@ function getSocketConnectionSummary() {
     `| URL | \`http://localhost:${config.port}\` (local) or production API origin |`,
     `| Path | \`${config.socket.path}\` (default \`/socket.io\`) |`,
     '| Auth | Access JWT in handshake: `auth: { token: "<access-jwt>" }` |',
-    '| CORS | Same \`ALLOWED_ORIGINS\` as REST |',
+    '| CORS | Same `ALLOWED_ORIGINS` as REST |',
     '',
     '**Not testable in Swagger UI** — use Postman Socket.IO requests, the client, or see',
     `[${CLIENT_AGENT_PATH}](${CLIENT_AGENT_PATH}) for full TypeScript examples.`,
